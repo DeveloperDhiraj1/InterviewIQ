@@ -1,4 +1,5 @@
-# Ignore local environment secrets
+# Ignore local environment secrets`r
+server/node_modules
 server/.env
 .env
 .env.*.local
