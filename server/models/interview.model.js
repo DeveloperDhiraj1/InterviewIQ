@@ -8,6 +8,21 @@ const answerSchema = new mongoose.Schema(
     feedback: { type: String, default: "" },
     strengths: [{ type: String }],
     improvements: [{ type: String }],
+    provider: { type: String, default: "" },
+    model: { type: String, default: "" },
+  },
+  { _id: false }
+)
+
+const reportSchema = new mongoose.Schema(
+  {
+    summary: { type: String, default: "" },
+    readiness: { type: String, enum: ["ready", "needs-practice", "early-stage", ""], default: "" },
+    strengths: [{ type: String }],
+    improvements: [{ type: String }],
+    nextSteps: [{ type: String }],
+    provider: { type: String, default: "" },
+    model: { type: String, default: "" },
   },
   { _id: false }
 )
@@ -19,7 +34,10 @@ const interviewSchema = new mongoose.Schema(
     type: { type: String, enum: ["technical", "behavioral", "hr"], default: "technical" },
     level: { type: String, default: "mid" },
     resumeSummary: { type: String, default: "" },
+    provider: { type: String, default: "" },
+    model: { type: String, default: "" },
     questions: [answerSchema],
+    report: { type: reportSchema, default: () => ({}) },
     overallScore: { type: Number, default: 0 },
     status: { type: String, enum: ["active", "completed"], default: "active" },
   },

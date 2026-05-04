@@ -10,14 +10,20 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
   credits: {
     type: Number,
     default: 100
-  }
-//   password: {
-//     type: String,
-//     required: true
-//   }
+  },
+  resetPasswordToken: {
+    type: String,
+    select: false,
+  },
+  resetPasswordExpire: Date,
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

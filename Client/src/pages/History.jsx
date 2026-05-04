@@ -68,6 +68,12 @@ function History() {
                   <p className='text-3xl font-semibold'>{interview.overallScore || 0}</p>
                 </div>
               </div>
+              {interview.report?.summary && (
+                <div className='mt-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900'>
+                  <p className='font-semibold uppercase'>Readiness: {interview.report.readiness}</p>
+                  <p className='mt-2 leading-6'>{interview.report.summary}</p>
+                </div>
+              )}
               <div className='mt-4 grid gap-3'>
                 {interview.questions.map((item, index) => (
                   <div key={item.question} className='rounded-xl bg-slate-100 p-4 text-sm'>

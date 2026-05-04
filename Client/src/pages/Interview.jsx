@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion as Motion } from 'framer-motion'
-import { FiArrowLeft, FiCheckCircle, FiFileText, FiMic, FiSend, FiUploadCloud } from 'react-icons/fi'
+import { FiArrowLeft, FiCheckCircle, FiMic, FiSend, FiUploadCloud } from 'react-icons/fi'
 import api from '../utils/api'
 import pdfAsset from '../assets/pdf.png'
 
@@ -10,7 +10,6 @@ function Interview() {
   const [role, setRole] = useState('Frontend Developer')
   const [type, setType] = useState('technical')
   const [level, setLevel] = useState('mid')
-  const [resumeText, setResumeText] = useState('')
   const [resumeFile, setResumeFile] = useState(null)
   const [resumeReport, setResumeReport] = useState(null)
   const [interview, setInterview] = useState(null)
@@ -20,16 +19,20 @@ function Interview() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const analyzeResume = async () => {
+  const analyzeResume = async (file) => {
+    if (!file) {
+      setMessage('Please upload a resume PDF first.')
+      return
+    }
+
     try {
       setLoading(true)
       setMessage('')
       const formData = new FormData()
-      if (resumeFile) formData.append('resume', resumeFile)
-      formData.append('resumeText', resumeText)
+      formData.append('resume', file)
       const { data } = await api.post('/api/resume/analyze', formData)
       setResumeReport(data.report)
-      setResumeText(data.resumeText)
+      setMessage('Resume uploaded successfully. AI analyzed your resume and will generate 25 questions from it.')
     } catch (error) {
       setMessage(error?.response?.data?.message || 'Resume analysis failed. Sign in first or use demo auth.')
     } finally {
@@ -37,7 +40,18 @@ function Interview() {
     }
   }
 
+  const handleResumeUpload = async (file) => {
+    setResumeFile(file)
+    setResumeReport(null)
+    await analyzeResume(file)
+  }
+
   const createInterview = async () => {
+    if (!resumeReport) {
+      setMessage('Please upload your resume first so AI can analyze it.')
+      return
+    }
+
     try {
       setLoading(true)
       setMessage('')
@@ -45,7 +59,7 @@ function Interview() {
         role,
         type,
         level,
-        resumeSummary: resumeReport?.summary || resumeText.slice(0, 500),
+        resumeSummary: resumeReport.summary,
       })
       setInterview(data.interview)
       const savedUser = localStorage.getItem('interviewiq-user')
@@ -53,7 +67,9 @@ function Interview() {
         const user = JSON.parse(savedUser)
         localStorage.setItem('interviewiq-user', JSON.stringify({ ...user, credits: data.credits }))
       }
-      setMessage(`Interview generated. 10 credits used. Credits left: ${data.credits}`)
+      const providerMessage = data.interview.provider === 'openai' ? 'OpenAI questions generated.' : 'Using local fallback questions.'
+      const errorMessage = data.aiError ? ` AI error: ${data.aiError}` : ''
+      setMessage(`Interview generated. 10 credits used. Credits left: ${data.credits}. ${providerMessage}${errorMessage}`)
       setStep(2)
     } catch (error) {
       setMessage(error?.response?.data?.message || 'Could not create interview.')
@@ -73,6 +89,9 @@ function Interview() {
       })
       setInterview(data.interview)
       setEvaluation(data.evaluation)
+      if (data.interview.status === 'completed') {
+        setStep(3)
+      }
     } catch (error) {
       setMessage(error?.response?.data?.message || 'Could not submit answer.')
     } finally {
@@ -104,7 +123,7 @@ function Interview() {
               <p className='text-sm font-semibold text-emerald-300'>AI interview agent</p>
               <h1 className='mt-2 text-4xl font-semibold'>Generate a role-specific round from your resume.</h1>
               <p className='mt-3 max-w-2xl text-sm leading-6 text-slate-300'>
-                Set the role, upload a PDF or paste resume text, then practice with scoring and saved reports.
+                Upload your resume PDF and AI will analyze it to generate 25 interview questions automatically.
               </p>
             </div>
             <img src={pdfAsset} alt='' className='h-32 w-full rounded-xl object-cover md:h-full' />
@@ -154,24 +173,24 @@ function Interview() {
                 <FiUploadCloud size={32} />
                 <span className='mt-3 text-sm font-semibold'>{resumeFile ? resumeFile.name : 'Upload resume PDF'}</span>
                 <span className='text-xs text-slate-500'>PDF up to 5MB</span>
-                <input type='file' accept='application/pdf' onChange={(event) => setResumeFile(event.target.files?.[0] || null)} className='hidden' />
+                <input type='file' accept='application/pdf' onChange={(event) => handleResumeUpload(event.target.files?.[0] || null)} className='hidden' />
               </label>
 
-              <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Or paste resume text here...' className='mt-5 min-h-52 w-full rounded-xl border border-slate-200 bg-slate-50 p-4 outline-none focus:border-slate-900' />
-
               <div className='mt-4 flex flex-col gap-3 sm:flex-row'>
-                <button onClick={analyzeResume} disabled={loading} className='inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold hover:bg-slate-50 disabled:opacity-60'>
-                  <FiFileText /> {loading ? 'Analyzing...' : 'Analyze resume'}
-                </button>
-                <button onClick={createInterview} disabled={loading} className='inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:opacity-60'>
+                <button onClick={createInterview} disabled={loading || !resumeReport} className='inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 disabled:opacity-60'>
                   <FiMic /> Generate interview
                 </button>
               </div>
 
               {resumeReport && (
                 <div className='mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800'>
-                  <p className='font-semibold'>ATS score: {resumeReport.score}</p>
+                  <p className='font-semibold'>ATS score: {resumeReport.score} | {resumeReport.provider || 'local'} analysis</p>
                   <p className='mt-2'>{resumeReport.summary}</p>
+                  <div className='mt-3 grid gap-2 md:grid-cols-2'>
+                    {(resumeReport.suggestions || []).map((suggestion) => (
+                      <p key={suggestion} className='rounded-lg bg-white/80 p-3 leading-5'>{suggestion}</p>
+                    ))}
+                  </div>
                 </div>
               )}
             </Motion.section>
@@ -180,7 +199,12 @@ function Interview() {
           {step === 2 && interview && (
             <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
               <div className='rounded-2xl bg-slate-900 p-5 text-white'>
-                <p className='text-sm text-slate-400'>Question {activeQuestion + 1} of {interview.questions.length}</p>
+                <div className='flex items-center justify-between gap-4'>
+                  <p className='text-sm text-slate-400'>Question {activeQuestion + 1} of {interview.questions.length}</p>
+                  <span className='rounded-full bg-slate-800 px-3 py-1 text-xs uppercase text-slate-300'>
+                    {interview.provider === 'openai' ? 'OpenAI' : 'Local'}
+                  </span>
+                </div>
                 <h2 className='mt-3 text-2xl font-semibold leading-relaxed'>{interview.questions[activeQuestion].question}</h2>
               </div>
               <textarea value={answer || interview.questions[activeQuestion].answer} onChange={(event) => setAnswer(event.target.value)} placeholder='Write your spoken answer here...' className='mt-5 min-h-56 w-full rounded-xl border border-slate-200 bg-slate-50 p-4 outline-none focus:border-slate-900' />
@@ -189,7 +213,7 @@ function Interview() {
                   <FiSend /> Submit answer
                 </button>
                 <button onClick={nextQuestion} className='rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold hover:bg-slate-50'>Next question</button>
-                <Link to='/history' className='rounded-lg bg-slate-900 px-5 py-3 text-center text-sm font-semibold text-white'>View report</Link>
+                <button onClick={() => setStep(3)} className='rounded-lg bg-slate-900 px-5 py-3 text-center text-sm font-semibold text-white'>View report</button>
               </div>
               {(evaluation || interview.questions[activeQuestion].feedback) && (
                 <div className='mt-5 rounded-xl bg-slate-100 p-5'>
@@ -197,6 +221,61 @@ function Interview() {
                   <p className='mt-2 text-sm leading-relaxed text-slate-600'>{evaluation?.feedback || interview.questions[activeQuestion].feedback}</p>
                 </div>
               )}
+            </Motion.section>
+          )}
+
+          {step === 3 && interview && (
+            <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+              <div className='flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-start md:justify-between'>
+                <div>
+                  <p className='text-sm font-semibold text-emerald-600'>Generated report</p>
+                  <h2 className='mt-1 text-3xl font-semibold'>{interview.role}</h2>
+                  <p className='mt-2 text-sm text-slate-500'>{interview.type} round | {interview.level} level | {interview.provider || 'local'} AI</p>
+                </div>
+                <div className='rounded-xl bg-slate-100 px-5 py-4 text-center'>
+                  <p className='text-xs font-semibold uppercase text-slate-500'>Overall score</p>
+                  <p className='text-4xl font-semibold'>{interview.overallScore || 0}</p>
+                </div>
+              </div>
+
+              <div className='mt-5 rounded-xl bg-emerald-50 p-5 text-emerald-900'>
+                <p className='text-sm font-semibold uppercase'>Readiness: {interview.report?.readiness || 'in progress'}</p>
+                <p className='mt-2 text-sm leading-6'>{interview.report?.summary || 'Answer all questions to generate a complete AI report.'}</p>
+              </div>
+
+              <div className='mt-5 grid gap-4 md:grid-cols-3'>
+                {[
+                  ['Strengths', interview.report?.strengths || []],
+                  ['Improvements', interview.report?.improvements || []],
+                  ['Next steps', interview.report?.nextSteps || []],
+                ].map(([title, items]) => (
+                  <div key={title} className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
+                    <h3 className='font-semibold'>{title}</h3>
+                    <div className='mt-3 grid gap-2'>
+                      {(items.length ? items : ['Complete more answers to unlock this section.']).map((item) => (
+                        <p key={item} className='rounded-lg bg-white p-3 text-sm leading-5 text-slate-600'>{item}</p>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className='mt-5 grid gap-3'>
+                {interview.questions.map((item, index) => (
+                  <div key={item.question} className='rounded-xl bg-slate-100 p-4 text-sm'>
+                    <div className='flex flex-col gap-2 md:flex-row md:items-start md:justify-between'>
+                      <p className='font-semibold'>Q{index + 1}. {item.question}</p>
+                      <span className='rounded-lg bg-white px-3 py-1 text-xs font-semibold text-slate-600'>{item.score || 0}/100</span>
+                    </div>
+                    <p className='mt-2 leading-6 text-slate-600'>{item.feedback || 'Not answered yet'}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className='mt-5 flex flex-col gap-3 sm:flex-row'>
+                <button onClick={() => setStep(2)} className='rounded-lg border border-slate-200 px-5 py-3 text-sm font-semibold hover:bg-slate-50'>Back to questions</button>
+                <Link to='/history' className='rounded-lg bg-slate-900 px-5 py-3 text-center text-sm font-semibold text-white'>Open history</Link>
+              </div>
             </Motion.section>
           )}
         </section>

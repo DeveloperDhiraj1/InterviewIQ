@@ -6,8 +6,6 @@ import Interview from './pages/Interview'
 import History from './pages/History'
 import Pricing from './pages/Pricing'
 
-export const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-
 function App() {
   return (
     <Routes>

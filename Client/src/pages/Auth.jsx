@@ -1,14 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion as Motion } from 'framer-motion'
 import { BsRobot } from 'react-icons/bs'
 import { IoSparkles } from 'react-icons/io5'
-import { FcGoogle } from 'react-icons/fc'
-import { signInWithPopup } from 'firebase/auth'
-import { auth, provider } from '../utils/firebse'
 import axios from 'axios'
-import { serverUrl } from '../App'
+import { serverUrl } from '../utils/api'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
 
 const cardAnimation = {
   initial: { opacity: 0, y: 20 },
@@ -18,45 +14,95 @@ const cardAnimation = {
 
 function Auth() {
   const navigate = useNavigate()
+  const [mode, setMode] = useState('login')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleGoogleAuth = async () => {
+  const resetForm = () => {
+    setName('')
+    setEmail('')
+    setPassword('')
+    setConfirmPassword('')
+    setStatus('')
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setIsLoading(true)
+    setStatus('')
+
     try {
-      setIsLoading(true)
-      setStatus('')
-      const response = await signInWithPopup(auth, provider)
-      const user = response.user
-      const name = user.displayName
-      const email = user.email
+      if (mode === 'register') {
+        if (!name || !email || !password || !confirmPassword) {
+          throw new Error('Fill all registration fields.')
+        }
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match.')
+        }
+        const result = await axios.post(
+          `${serverUrl}/api/auth/register`,
+          { name, email, password },
+          { withCredentials: true }
+        )
+        localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+        navigate('/home')
+        return
+      }
 
-      const result = await axios.post(
-        `${serverUrl}/api/auth/google`,
-        { name, email },
-        { withCredentials: true }
-      )
+      if (mode === 'login') {
+        if (!email || !password) {
+          throw new Error('Enter email and password.')
+        }
+        const result = await axios.post(
+          `${serverUrl}/api/auth/login`,
+          { email, password },
+          { withCredentials: true }
+        )
+        localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+        navigate('/home')
+        return
+      }
 
-      localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
-      navigate('/home')
+      if (mode === 'forgot') {
+        if (!email || !password) {
+          throw new Error('Enter email and new password.')
+        }
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match.')
+        }
+        await axios.post(
+          `${serverUrl}/api/auth/forgot-password`,
+          { email, newPassword: password },
+          { withCredentials: true }
+        )
+        setStatus('Password updated successfully. Please login with your new password.')
+        setMode('login')
+        return
+      }
     } catch (error) {
-      console.error('Google authentication failed:', error)
-      setStatus(error?.response?.data?.message || error.message || 'Google authentication failed.')
+      setStatus(error?.response?.data?.message || error.message || 'Authentication failed.')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const continueAsDemo = () => {
+  const handleDemoLogin = async () => {
     setIsLoading(true)
     setStatus('')
-    axios
-      .post(`${serverUrl}/api/auth/demo`, {}, { withCredentials: true })
-      .then(({ data }) => {
-        localStorage.setItem('interviewiq-user', JSON.stringify(data.user))
-        navigate('/home')
-      })
-      .catch((error) => setStatus(error?.response?.data?.message || 'Demo login failed.'))
-      .finally(() => setIsLoading(false))
+
+    try {
+      const result = await axios.post(`${serverUrl}/api/auth/demo`, {}, { withCredentials: true })
+      localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+      navigate('/home')
+    } catch (error) {
+      setStatus(error?.response?.data?.message || 'Demo login failed.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -67,39 +113,102 @@ function Auth() {
         animate={cardAnimation.animate}
         transition={cardAnimation.transition}
       >
-        <div className='mb-6 flex items-center justify-center gap-3'>
+        <div className='mb-6 flex items-center justify-between gap-3'>
           <div className='rounded-lg bg-black p-2 text-white'>
             <BsRobot size={18} />
           </div>
-          <h2 className='text-lg font-semibold'>Interview.AI</h2>
+          <div>
+            <h2 className='text-lg font-semibold'>Interview.AI</h2>
+            <p className='text-sm text-slate-500'>Use email & password to sign in.</p>
+          </div>
         </div>
-        <h1 className='mb-4 text-center text-2xl font-semibold leading-snug md:text-3xl'>
-          Continue with{' '}
-          <span className='inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-green-600'>
-            <IoSparkles size={16} />
-            AI Smart Interview
-          </span>
-        </h1>
-        <p className='mb-8 text-center text-sm leading-relaxed text-gray-500 md:text-base'>
-          Sign in to start AI-powered mock interviews, track your progress, and unlock detailed performance insights.
-        </p>
 
-        <Motion.button
-          onClick={handleGoogleAuth}
-          disabled={isLoading}
-          whileHover={{ opacity: 0.9, scale: 1.03 }}
-          whileTap={{ opacity: 1, scale: 0.98 }}
-          className='flex w-full items-center justify-center gap-3 rounded-full bg-black py-3 text-white shadow-md disabled:cursor-not-allowed disabled:opacity-60'
-        >
-          <FcGoogle size={25} />
-          {isLoading ? 'Connecting...' : 'Continue with Google'}
-        </Motion.button>
+        <div className='mb-6 grid grid-cols-3 gap-2'>
+          {['login', 'register', 'forgot'].map((item) => (
+            <button
+              key={item}
+              type='button'
+              onClick={() => {
+                setMode(item)
+                resetForm()
+              }}
+              className={`rounded-full py-2 text-sm font-semibold ${mode === item ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}
+            >
+              {item === 'forgot' ? 'Forgot' : item.charAt(0).toUpperCase() + item.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          {mode === 'register' && (
+            <label className='block text-sm font-semibold text-slate-700'>
+              Name
+              <input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+                placeholder='Your name'
+              />
+            </label>
+          )}
+
+          <label className='block text-sm font-semibold text-slate-700'>
+            Email
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+              placeholder='you@example.com'
+              type='email'
+            />
+          </label>
+
+          <label className='block text-sm font-semibold text-slate-700'>
+            {mode === 'forgot' ? 'New Password' : 'Password'}
+            <input
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+              placeholder='Password'
+              type='password'
+            />
+          </label>
+
+          {(mode === 'register' || mode === 'forgot') && (
+            <label className='block text-sm font-semibold text-slate-700'>
+              Confirm Password
+              <input
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+                placeholder='Confirm password'
+                type='password'
+              />
+            </label>
+          )}
+
+          <button
+            type='submit'
+            disabled={isLoading}
+            className='w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-md hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60'
+          >
+            {isLoading
+              ? 'Processing...'
+              : mode === 'register'
+              ? 'Register'
+              : mode === 'forgot'
+              ? 'Reset Password'
+              : 'Login'}
+          </button>
+        </form>
+
         <button
-          onClick={continueAsDemo}
-          className='mt-3 w-full rounded-full border border-gray-200 py-3 text-sm font-semibold text-gray-700'
+          onClick={handleDemoLogin}
+          className='mt-4 w-full rounded-full border border-slate-200 bg-slate-50 py-3 text-sm font-semibold text-slate-700'
         >
           Continue as demo candidate
         </button>
+
         {status && <p className='mt-4 rounded-lg bg-red-50 p-3 text-center text-sm text-red-600'>{status}</p>}
       </Motion.div>
     </Motion.div>

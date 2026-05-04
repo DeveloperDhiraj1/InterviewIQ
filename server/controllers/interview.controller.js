@@ -1,6 +1,6 @@
 import Interview from "../models/interview.model.js"
 import User from "../models/usermodel.js"
-import { evaluateAnswer, generateInterviewQuestions } from "../utils/interviewAi.js"
+import { evaluateAnswer, generateInterviewQuestions, generateInterviewReport } from "../utils/interviewAi.js"
 
 const INTERVIEW_COST = 10
 
@@ -17,20 +17,26 @@ export const createInterview = async (req, res) => {
       return res.status(402).json({ message: "Not enough credits. Please purchase more credits." })
     }
 
-    const questionText = generateInterviewQuestions({ role, type, level, resumeSummary })
+    const generated = await generateInterviewQuestions({ role, type, level, resumeSummary })
     const interview = await Interview.create({
       user: req.userId,
       role: role || "Software Developer",
       type: type || "technical",
       level: level || "mid",
       resumeSummary,
-      questions: questionText.map((question) => ({ question })),
+      provider: generated.provider,
+      model: generated.model,
+      questions: generated.questions.map((question) => ({
+        question,
+        provider: generated.provider,
+        model: generated.model,
+      })),
     })
 
     user.credits -= INTERVIEW_COST
     await user.save()
 
-    return res.status(201).json({ interview, credits: user.credits })
+    return res.status(201).json({ interview, credits: user.credits, aiError: generated.aiError })
   } catch (error) {
     return res.status(500).json({ message: `Create interview error ${error.message}` })
   }
@@ -50,18 +56,31 @@ export const submitAnswer = async (req, res) => {
       return res.status(400).json({ message: "Invalid question index" })
     }
 
-    const evaluation = evaluateAnswer(answer)
+    const evaluation = await evaluateAnswer({
+      question: target.question,
+      answer,
+      role: interview.role,
+      type: interview.type,
+      level: interview.level,
+      resumeSummary: interview.resumeSummary,
+    })
     target.answer = answer
     target.score = evaluation.score
     target.feedback = evaluation.feedback
     target.strengths = evaluation.strengths
     target.improvements = evaluation.improvements
+    target.provider = evaluation.provider
+    target.model = evaluation.model
 
     const answered = interview.questions.filter((item) => item.answer)
     interview.overallScore = answered.length
       ? Math.round(answered.reduce((sum, item) => sum + item.score, 0) / answered.length)
       : 0
     interview.status = answered.length === interview.questions.length ? "completed" : "active"
+
+    if (interview.status === "completed") {
+      interview.report = await generateInterviewReport(interview)
+    }
 
     await interview.save()
     return res.status(200).json({ interview, evaluation })
@@ -86,7 +105,12 @@ export const getInterviewReport = async (req, res) => {
       return res.status(404).json({ message: "Interview not found" })
     }
 
-    return res.status(200).json({ interview })
+    if (!interview.report?.summary && interview.questions.some((item) => item.answer)) {
+      interview.report = await generateInterviewReport(interview)
+      await interview.save()
+    }
+
+    return res.status(200).json({ interview, report: interview.report })
   } catch (error) {
     return res.status(500).json({ message: `Report error ${error.message}` })
   }

@@ -22,7 +22,7 @@ export const analyzeResume = async (req, res) => {
       return res.status(400).json({ message: "Upload a PDF or paste resume text" })
     }
 
-    const report = extractResumeSignals(resumeText)
+    const report = await extractResumeSignals(resumeText)
     return res.status(200).json({ report, resumeText })
   } catch (error) {
     return res.status(500).json({ message: `Resume analysis error ${error.message}` })
