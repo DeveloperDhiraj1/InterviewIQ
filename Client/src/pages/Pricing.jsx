@@ -67,22 +67,22 @@ function Pricing() {
   }
 
   return (
-    <main className='min-h-screen bg-[#f5f7fb] px-4 py-6 text-slate-900 sm:px-6'>
+    <main className='app-shell px-4 py-6 sm:px-6'>
       <div className='mx-auto max-w-7xl'>
-        <Link to='/' className='inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm hover:bg-slate-50'>
+        <Link to='/' className='btn-ghost inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white'>
           <FiArrowLeft /> Dashboard
         </Link>
 
-        <section className='mt-6 overflow-hidden rounded-2xl bg-slate-950 text-white shadow-xl'>
+        <section className='hero-panel mt-6 overflow-hidden rounded-2xl text-white'>
           <div className='grid gap-6 p-6 md:grid-cols-[1fr_240px] md:p-8'>
             <div>
               <p className='text-sm font-semibold text-emerald-300'>Credits and billing</p>
-              <h1 className='mt-2 text-4xl font-semibold'>Buy credits for mock interviews.</h1>
+              <h1 className='mt-2 max-w-3xl text-4xl font-semibold leading-tight'>Buy credits for mock interviews.</h1>
               <p className='mt-3 max-w-2xl text-sm leading-6 text-slate-300'>
                 Each generated interview uses 10 credits. Razorpay is used when keys are configured; local development uses demo credit mode.
               </p>
             </div>
-            <img src={creditAsset} alt='' className='h-36 w-full rounded-xl object-cover md:h-full' />
+            <img src={creditAsset} alt='' className='h-36 w-full rounded-xl border border-white/10 object-cover shadow-2xl md:h-full' />
           </div>
         </section>
 
@@ -90,15 +90,15 @@ function Pricing() {
 
         <section className='mt-6 grid gap-4 md:grid-cols-3'>
           {plans.map((plan, index) => (
-            <article key={plan.id} className={`rounded-2xl border bg-white p-6 shadow-sm ${index === 1 ? 'border-emerald-300 ring-4 ring-emerald-100' : 'border-slate-200'}`}>
-              {index === 1 && <p className='mb-4 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700'>Best value</p>}
-              <p className='text-sm font-semibold text-emerald-600'>{plan.name}</p>
+            <article key={plan.id} className={`premium-card rounded-2xl p-6 ${index === 1 ? 'ring-4 ring-emerald-200/70' : ''}`}>
+              {index === 1 && <p className='chip mb-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold'>Best value</p>}
+              <p className='eyebrow'>{plan.name}</p>
               <p className='mt-3 text-4xl font-semibold'>{plan.price}</p>
               <p className='mt-2 text-sm text-slate-500'>{plan.credits} credits</p>
               <div className='mt-6 flex items-start gap-2 text-sm leading-6 text-slate-600'>
                 <FiCheck className='mt-1 text-emerald-500' /> {plan.bestFor}
               </div>
-              <button onClick={() => buyPlan(plan.id)} disabled={loadingPlan === plan.id} className='mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 disabled:opacity-60'>
+              <button onClick={() => buyPlan(plan.id)} disabled={loadingPlan === plan.id} className='btn-dark mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold disabled:opacity-60'>
                 <FiCreditCard /> {loadingPlan === plan.id ? 'Processing...' : 'Buy credits'}
               </button>
             </article>

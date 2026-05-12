@@ -6,7 +6,7 @@ const INTERVIEW_COST = 10
 
 export const createInterview = async (req, res) => {
   try {
-    const { role, type, level, resumeSummary } = req.body
+    const { role, type, level, resumeSummary, experience, projects = [], skills = [], resumeText = "" } = req.body
     const user = await User.findById(req.userId)
 
     if (!user) {
@@ -17,13 +17,25 @@ export const createInterview = async (req, res) => {
       return res.status(402).json({ message: "Not enough credits. Please purchase more credits." })
     }
 
-    const generated = await generateInterviewQuestions({ role, type, level, resumeSummary })
+    const generated = await generateInterviewQuestions({
+      role,
+      type,
+      level,
+      resumeSummary,
+      experience,
+      projects,
+      skills,
+      resumeText,
+    })
     const interview = await Interview.create({
       user: req.userId,
       role: role || "Software Developer",
       type: type || "technical",
       level: level || "mid",
       resumeSummary,
+      experience,
+      projects,
+      skills,
       provider: generated.provider,
       model: generated.model,
       questions: generated.questions.map((question) => ({
@@ -44,7 +56,7 @@ export const createInterview = async (req, res) => {
 
 export const submitAnswer = async (req, res) => {
   try {
-    const { interviewId, questionIndex, answer } = req.body
+    const { interviewId, questionIndex, answer, voiceConfidence = 0 } = req.body
     const interview = await Interview.findOne({ _id: interviewId, user: req.userId })
 
     if (!interview) {
@@ -66,6 +78,10 @@ export const submitAnswer = async (req, res) => {
     })
     target.answer = answer
     target.score = evaluation.score
+    target.confidence = evaluation.confidence
+    target.communication = evaluation.communication
+    target.correctness = evaluation.correctness
+    target.voiceConfidence = voiceConfidence
     target.feedback = evaluation.feedback
     target.strengths = evaluation.strengths
     target.improvements = evaluation.improvements

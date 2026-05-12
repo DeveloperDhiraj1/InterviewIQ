@@ -18,20 +18,20 @@ function History() {
   const completed = interviews.filter((item) => item.status === 'completed').length
 
   return (
-    <main className='min-h-screen bg-[#f5f7fb] px-4 py-6 text-slate-900 sm:px-6'>
+    <main className='app-shell px-4 py-6 sm:px-6'>
       <div className='mx-auto max-w-7xl'>
         <div className='mb-6 flex items-center justify-between'>
-          <Link to='/' className='inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm hover:bg-slate-50'>
+          <Link to='/' className='btn-ghost inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white'>
             <FiArrowLeft /> Dashboard
           </Link>
-          <Link to='/interview' className='rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm'>
+          <Link to='/interview' className='btn-dark rounded-lg px-4 py-2 text-sm font-semibold'>
             New interview
           </Link>
         </div>
 
-        <section className='rounded-2xl bg-slate-950 p-6 text-white shadow-xl md:p-8'>
+        <section className='hero-panel rounded-2xl p-6 text-white md:p-8'>
           <p className='text-sm font-semibold text-emerald-300'>Reports</p>
-          <h1 className='mt-2 text-4xl font-semibold'>Interview History</h1>
+          <h1 className='mt-2 text-4xl font-semibold leading-tight'>Interview History</h1>
           <p className='mt-3 max-w-2xl text-sm leading-6 text-slate-300'>
             Review generated rounds, scores, feedback, and completion state in one clean workspace.
           </p>
@@ -43,10 +43,10 @@ function History() {
             [FiClock, 'Total sessions', interviews.length],
             [FiTarget, 'Completed', completed],
           ].map(([Icon, label, value]) => (
-            <div key={label} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
-              <Icon className='text-emerald-500' />
+            <div key={label} className='premium-card rounded-2xl p-5'>
+              {React.createElement(Icon, { className: 'text-emerald-500' })}
               <p className='mt-4 text-sm text-slate-500'>{label}</p>
-              <p className='text-4xl font-semibold'>{value}</p>
+              <p className='text-4xl font-semibold'>{value}{label === 'Average score' && <span className='text-base text-slate-500'>/10</span>}</p>
             </div>
           ))}
         </section>
@@ -55,7 +55,7 @@ function History() {
 
         <section className='mt-6 grid gap-4'>
           {interviews.map((interview) => (
-            <article key={interview._id} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+            <article key={interview._id} className='premium-card rounded-2xl p-5'>
               <div className='flex flex-col gap-3 border-b border-slate-200 pb-4 md:flex-row md:items-center md:justify-between'>
                 <div>
                   <h2 className='text-xl font-semibold'>{interview.role}</h2>
@@ -63,9 +63,9 @@ function History() {
                     {interview.type} round | {interview.level} level | {new Date(interview.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <div className='rounded-xl bg-slate-100 px-4 py-3 text-center'>
+                <div className='premium-card-muted rounded-xl px-4 py-3 text-center'>
                   <p className='text-xs font-semibold uppercase text-slate-500'>Score</p>
-                  <p className='text-3xl font-semibold'>{interview.overallScore || 0}</p>
+                  <p className='text-3xl font-semibold'>{interview.overallScore || 0}<span className='text-base text-slate-500'>/10</span></p>
                 </div>
               </div>
               {interview.report?.summary && (
@@ -76,9 +76,10 @@ function History() {
               )}
               <div className='mt-4 grid gap-3'>
                 {interview.questions.map((item, index) => (
-                  <div key={item.question} className='rounded-xl bg-slate-100 p-4 text-sm'>
+                  <div key={item.question} className='premium-card-muted rounded-xl p-4 text-sm'>
                     <p className='font-semibold'>Q{index + 1}. {item.question}</p>
                     <p className='mt-2 leading-6 text-slate-600'>{item.feedback || 'Not answered yet'}</p>
+                    {item.voiceConfidence > 0 && <p className='mt-2 text-xs font-semibold uppercase text-emerald-700'>Voice confidence: {item.voiceConfidence}/10</p>}
                   </div>
                 ))}
               </div>

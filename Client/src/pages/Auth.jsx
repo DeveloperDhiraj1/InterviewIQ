@@ -106,20 +106,20 @@ function Auth() {
   }
 
   return (
-    <Motion.div className='w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20'>
+    <Motion.div className='app-shell flex min-h-screen w-full items-center justify-center px-6 py-20'>
       <Motion.div
-        className='w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 shadow-2xl'
+        className='premium-card w-full max-w-md rounded-3xl p-8'
         initial={cardAnimation.initial}
         animate={cardAnimation.animate}
         transition={cardAnimation.transition}
       >
         <div className='mb-6 flex items-center justify-between gap-3'>
-          <div className='rounded-lg bg-black p-2 text-white'>
+          <div className='btn-dark rounded-lg p-2'>
             <BsRobot size={18} />
           </div>
           <div>
-            <h2 className='text-lg font-semibold'>Interview.AI</h2>
-            <p className='text-sm text-slate-500'>Use email & password to sign in.</p>
+            <h2 className='text-lg font-semibold'>InterviewIQ</h2>
+            <p className='text-sm text-slate-500'>Use email and password to sign in.</p>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ function Auth() {
                 setMode(item)
                 resetForm()
               }}
-              className={`rounded-full py-2 text-sm font-semibold ${mode === item ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}
+              className={`rounded-full py-2 text-sm font-semibold ${mode === item ? 'btn-dark' : 'premium-card-muted text-slate-600'}`}
             >
               {item === 'forgot' ? 'Forgot' : item.charAt(0).toUpperCase() + item.slice(1)}
             </button>
@@ -146,7 +146,7 @@ function Auth() {
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+                className='soft-input mt-2 w-full rounded-xl px-4 py-3'
                 placeholder='Your name'
               />
             </label>
@@ -157,7 +157,7 @@ function Auth() {
             <input
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+              className='soft-input mt-2 w-full rounded-xl px-4 py-3'
               placeholder='you@example.com'
               type='email'
             />
@@ -168,7 +168,7 @@ function Auth() {
             <input
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+              className='soft-input mt-2 w-full rounded-xl px-4 py-3'
               placeholder='Password'
               type='password'
             />
@@ -180,7 +180,7 @@ function Auth() {
               <input
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className='mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-900'
+                className='soft-input mt-2 w-full rounded-xl px-4 py-3'
                 placeholder='Confirm password'
                 type='password'
               />
@@ -190,7 +190,7 @@ function Auth() {
           <button
             type='submit'
             disabled={isLoading}
-            className='w-full rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-md hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60'
+            className='btn-primary w-full rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60'
           >
             {isLoading
               ? 'Processing...'
@@ -204,7 +204,7 @@ function Auth() {
 
         <button
           onClick={handleDemoLogin}
-          className='mt-4 w-full rounded-full border border-slate-200 bg-slate-50 py-3 text-sm font-semibold text-slate-700'
+          className='btn-ghost mt-4 w-full rounded-full py-3 text-sm font-semibold text-slate-700'
         >
           Continue as demo candidate
         </button>

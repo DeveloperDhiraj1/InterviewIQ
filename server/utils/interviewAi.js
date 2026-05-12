@@ -1,9 +1,9 @@
 const OPENAI_API_URL = "https://api.openai.com/v1/responses"
 const DEFAULT_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini"
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"
 const GEMINI_API_URL =
   process.env.GEMINI_API_URL ||
-  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
 
 const AI_PROVIDER = (process.env.AI_PROVIDER || "openai").toLowerCase()
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
@@ -193,6 +193,18 @@ function localResumeSignals(text = "") {
   const hasMetrics = /\d+%|\d+\s*(users|customers|projects|months|years|x|k|m|requests)/i.test(text)
   const hasLinks = /github|linkedin|portfolio|https?:\/\//i.test(text)
   const hasActionWords = /built|created|led|improved|optimized|launched|designed|implemented|reduced/i.test(text)
+  const role = normalized.includes("frontend")
+    ? "Frontend Developer"
+    : normalized.includes("backend")
+      ? "Backend Developer"
+      : normalized.includes("full stack") || normalized.includes("fullstack")
+        ? "Full Stack Developer"
+        : "Software Developer"
+  const projectMatches = text
+    .split(/\n|\*|-/)
+    .map((line) => line.trim())
+    .filter((line) => /project|built|created|developed|implemented|designed/i.test(line))
+    .slice(0, 4)
 
   const score = Math.min(
     96,
@@ -200,6 +212,10 @@ function localResumeSignals(text = "") {
   )
 
   return {
+    role,
+    experience: normalized.match(/\b\d+\+?\s*(years|yrs|year)\b/)?.[0] || "Not specified",
+    projects: projectMatches.length ? projectMatches : ["Resume project details need clearer project names."],
+    skills: matchedSkills.length ? matchedSkills : skillMap[getRoleKey(role)],
     score,
     matchedSkills,
     summary:
@@ -216,107 +232,81 @@ function localResumeSignals(text = "") {
   }
 }
 
-function localInterviewQuestions({ role = "Software Developer", type = "technical", level = "mid", resumeSummary = "", count = 25 }) {
-  const skills = skillMap[getRoleKey(role)] || skillMap.default
-  const context = resumeSummary ? ` Your resume context: ${resumeSummary}` : ""
+function fitQuestionLength(question) {
+  const words = question.split(/\s+/).filter(Boolean)
+  if (words.length >= 15 && words.length <= 25) return question
+  if (words.length < 15) {
+    return `${question.replace(/\?$/, "")} using a clear example from your recent practical work?`
+  }
+  return `${words.slice(0, 24).join(" ").replace(/[?.!,;:]$/, "")}?`
+}
+
+function localInterviewQuestions({
+  role = "Software Developer",
+  type = "technical",
+  level = "mid",
+  resumeSummary = "",
+  projects = [],
+  skills: resumeSkills = [],
+  resumeText = "",
+  count = 5,
+}) {
+  const roleSkills = skillMap[getRoleKey(role)] || skillMap.default
+  const selectedSkills = resumeSkills.length ? resumeSkills : roleSkills
+  const project = projects[0] || "your main resume project"
+  const context = resumeSummary || resumeText ? "based on your resume details" : "based on your recent work"
 
   const hrQuestions = [
-    `Why are you interested in the ${role} role?`,
-    `Tell me about a time you handled pressure while working at a ${level} level.`,
-    "What kind of team environment helps you perform your best?",
-    "Describe a failure and what you changed afterward.",
-    `Why should the company choose you for this ${role} opening?${context}`,
-    `How do you stay motivated when a project changes direction?`,
-    `What makes a strong culture for a ${level} ${role}?`,
-    "How do you prioritize work when everything feels urgent?",
-    "Describe a time you helped a teammate succeed.",
-    `How would you explain your one-year goals in this ${role} position?`,
+    `Can you briefly introduce yourself and explain why this ${role} opportunity feels like a good next step?`,
+    `What motivates you most when working as a ${role}, especially during routine or repetitive project tasks?`,
+    `Tell me about a time you handled pressure while staying calm, organized, and professional with your team.`,
+    `How would you manage a disagreement with a teammate while still keeping the project work moving forward?`,
+    `Why should we choose you for this ${role} position compared with other candidates with similar skills?`,
   ]
 
   const behavioralQuestions = [
-    "Tell me about a project where you had unclear requirements.",
-    "Describe a time you disagreed with a teammate and still shipped the work.",
-    "Give an example of feedback that changed how you work.",
-    `Tell me about a time you showed ownership as a ${role}.`,
-    `Describe a difficult deadline and the result.${context}`,
-    "How did you adapt when priorities shifted suddenly?",
-    "What was the most important lesson from your last major project?",
-    "Share an example of when you mentored or supported someone else.",
-    "How did you handle a mistake you made on a high-stakes task?",
-    "Describe a time you turned a setback into a stronger outcome.",
+    `Tell me about a project where the requirements were unclear and how you decided what to build first.`,
+    `Describe a time you received feedback on your work and used it to improve your final outcome.`,
+    `How did you organize your tasks when working on ${project} and facing multiple competing priorities?`,
+    `Tell me about a mistake you made in a project and what you changed after learning from it.`,
+    `Describe a difficult collaboration where you still delivered useful results and protected the quality of work.`,
   ]
 
   const technicalQuestions = [
-    `Walk me through a ${role} project where you used ${skills[0]}.`,
-    `How would you design a production-ready feature involving ${skills[1]}?`,
-    `Explain a debugging process for a complex ${skills[2]} issue.`,
-    `What tradeoffs would you consider for ${skills[3]} in a SaaS product?`,
-    `How would you test and deploy a ${level}-level ${role} feature?${context}`,
-    `How do you approach performance when you work with ${skills[0]}?`,
-    `What is your strategy for reducing technical debt on ${skills[1]} work?`,
-    `Explain how you would scale a system that depends on ${skills[2]}.`,
-    `What security risks do you watch for in ${skills[3]} architectures?`,
-    `How do you validate a production change before release?`,
+    `Can you explain one ${role} project from your resume and the main problem it solved?`,
+    `How did you use ${selectedSkills[0]} in your work, and what challenge did it help you handle?`,
+    `Walk me through how you would debug a production issue in ${project} without guessing randomly.`,
+    `What tradeoffs would you consider while improving performance, security, and maintainability in this project?`,
+    `How would you redesign ${project} for more users while keeping the system reliable and easy to maintain?`,
   ]
 
   const templates = type === "hr" ? hrQuestions : type === "behavioral" ? behavioralQuestions : technicalQuestions
-
-  const dynamicQuestions = []
-  const extraTemplates = type === "hr"
-    ? [
-        `What do you think is the most important quality for a ${level} ${role}?`,
-        "How do you build trust with new colleagues?",
-        "Describe the best feedback you've ever received.",
-        `How would you handle conflict between your manager and a teammate?`,
-        "What motivates you to keep growing in your career?",
-      ]
-    : type === "behavioral"
-      ? [
-          "Tell me about a time you managed competing priorities successfully.",
-          `Describe how you kept focus during a long ${role} project.`,
-          "What did you learn from a difficult collaboration?",
-          "How do you stay calm while solving an urgent problem?",
-          "When have you changed your approach after new information?",
-        ]
-      : [
-          `How would you compare ${skills[0]} and ${skills[1]} when choosing a solution?`,
-          `Describe a time you improved reliability in a ${skills[2]} system.`,
-          `What metrics matter most for ${skills[3]} performance?`,
-          `How would you automate testing for ${skills[0]} code?`,
-          `What is your rollback plan if a ${skills[1]} release fails?`,
-        ]
-
-  while (templates.length + dynamicQuestions.length < count) {
-    const index = dynamicQuestions.length % extraTemplates.length
-    const skill = skills[dynamicQuestions.length % skills.length]
-    const variant = extraTemplates[index]
-      .replace(/\$\{skills\[0\]\}/g, skills[0])
-      .replace(/\$\{skills\[1\]\}/g, skills[1])
-      .replace(/\$\{skills\[2\]\}/g, skills[2])
-      .replace(/\$\{skills\[3\]\}/g, skills[3])
-      .replace(/\$\{skill\}/g, skill)
-    dynamicQuestions.push(variant)
-  }
-
-  return [...templates, ...dynamicQuestions].slice(0, count)
+  return templates.slice(0, count).map((question) => fitQuestionLength(question.replace("based on your recent work", context)))
 }
 
 function localAnswerEvaluation(answer = "") {
   const words = answer.trim().split(/\s+/).filter(Boolean)
   const structure = /(situation|task|action|result|first|then|finally|because|impact|learned)/i.test(answer)
   const metrics = /\d|percent|users|latency|revenue|deadline|team|customer/i.test(answer)
-  const score = Math.min(98, Math.max(35, Math.round(words.length * 2 + (structure ? 22 : 8) + (metrics ? 20 : 8))))
+  const confidence = Math.min(10, Math.max(1, Math.round(words.length / 18) + (structure ? 2 : 0)))
+  const communication = Math.min(10, Math.max(1, Math.round(words.length / 22) + (answer.includes(".") ? 2 : 1)))
+  const correctness = Math.min(10, Math.max(1, Math.round(words.length / 20) + (metrics ? 2 : 0) + (structure ? 1 : 0)))
+  const finalScore = Math.round((confidence + communication + correctness) / 3)
 
   return {
-    score,
+    confidence,
+    communication,
+    correctness,
+    finalScore,
+    score: finalScore,
     feedback:
-      score >= 85
-        ? "Strong answer. It is specific, structured, and outcome-focused."
-        : score >= 70
-          ? "Good answer. Add one sharper metric and make the ending more memorable."
-          : "Use STAR format, add one concrete example, and finish with measurable impact.",
+      finalScore >= 8
+        ? "Strong answer with clear structure, confidence, and relevant practical detail."
+        : finalScore >= 6
+          ? "Good answer, but add sharper examples and more measurable impact."
+          : "Answer needs clearer structure, stronger detail, and more confidence.",
     strengths: [structure ? "Structured response" : "Clear starting point", metrics ? "Specific impact" : "Relevant example"],
-    improvements: score >= 85 ? ["Tighten the opening sentence"] : ["Add measurable result", "Clarify your personal ownership"],
+    improvements: finalScore >= 8 ? ["Tighten the opening sentence"] : ["Add measurable result", "Clarify your personal ownership"],
     ...localProvider,
   }
 }
@@ -331,7 +321,7 @@ function localReport(interview) {
       answered.length === interview.questions.length
         ? `${interview.role} ${interview.type} round completed with an overall score of ${interview.overallScore}.`
         : `${answered.length} of ${interview.questions.length} questions answered so far for the ${interview.role} round.`,
-    readiness: interview.overallScore >= 80 ? "ready" : interview.overallScore >= 60 ? "needs-practice" : "early-stage",
+    readiness: interview.overallScore >= 8 ? "ready" : interview.overallScore >= 6 ? "needs-practice" : "early-stage",
     strengths: strengths.length ? strengths : ["Relevant examples"],
     improvements: improvements.length ? improvements : ["Answer every question with a clear result"],
     nextSteps: [
@@ -348,39 +338,106 @@ export async function extractResumeSignals(text = "") {
 
   try {
     const result = await callAiJson({
-      schemaName: "resume_analysis",
+      schemaName: "resume_structured_data",
       instructions:
-        "You are an interview coach and resume reviewer. Analyze resumes for interview readiness. Be specific, concise, and practical.",
-      input: `Analyze this resume text and return interview-ready insights.\n\nResume:\n${clampText(text)}`,
+        `Extract structured data from resume.
+
+Return strictly JSON:
+
+{
+  "role": "string",
+  "experience": "string",
+  "projects": ["project1", "project2"],
+  "skills": ["skill1", "skill2"]
+}`,
+      input: clampText(text),
       schema: {
         type: "object",
         additionalProperties: false,
-        required: ["score", "matchedSkills", "summary", "suggestions"],
+        required: ["role", "experience", "projects", "skills"],
         properties: {
-          score: { type: "integer", minimum: 0, maximum: 100 },
-          matchedSkills: { type: "array", items: { type: "string" } },
-          summary: { type: "string" },
-          suggestions: { type: "array", items: { type: "string" } },
+          role: { type: "string" },
+          experience: { type: "string" },
+          projects: { type: "array", items: { type: "string" } },
+          skills: { type: "array", items: { type: "string" } },
         },
       },
     })
 
     if (!result) return fallback
-    return { ...fallback, ...result.json, provider: result.provider, model: result.model }
+    const structured = result.json
+    return {
+      ...fallback,
+      ...structured,
+      matchedSkills: structured.skills,
+      summary: `${structured.role || "Candidate"} with ${structured.experience || "experience not specified"}. Skills: ${(structured.skills || []).slice(0, 6).join(", ") || "not listed"}.`,
+      suggestions: [
+        "Prepare examples from your strongest resume projects.",
+        "Add measurable outcomes where project impact is unclear.",
+        "Connect each skill to one practical implementation story.",
+      ],
+      provider: result.provider,
+      model: result.model,
+    }
   } catch (error) {
     return { ...fallback, aiError: error.message }
   }
 }
 
-export async function generateInterviewQuestions({ role = "Software Developer", type = "technical", level = "mid", resumeSummary = "" }) {
-  const fallbackQuestions = localInterviewQuestions({ role, type, level, resumeSummary, count: 25 })
+function normalizeQuestionLines(text = "") {
+  return String(text)
+    .split("\n")
+    .map((line) => line.replace(/^\s*(?:\d+[\).:-]|\-|\*)\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 5)
+}
+
+export async function generateInterviewQuestions({
+  role = "Software Developer",
+  type = "technical",
+  level = "mid",
+  resumeSummary = "",
+  experience = "",
+  projects = [],
+  skills = [],
+  resumeText = "",
+}) {
+  const fallbackQuestions = localInterviewQuestions({ role, type, level, resumeSummary, projects, skills, resumeText, count: 5 })
 
   try {
     const result = await callAiJson({
       schemaName: "interview_questions",
       instructions:
-        "You generate realistic interview questions. Use the resume context when present. Questions should be challenging, role-specific, and answerable in 2-4 minutes.",
-      input: JSON.stringify({ role, type, level, resumeSummary: clampText(resumeSummary, 2500), questionCount: 25 }),
+        `You are a real human interviewer conducting a professional interview.
+
+Speak in simple, natural English as if you are directly talking to the candidate.
+
+Generate exactly 5 interview questions.
+
+Strict Rules:
+- Each question must contain between 15 and 25 words.
+- Each question must be a single complete sentence.
+- Do NOT number them.
+- Do NOT add explanations.
+- Do NOT add extra text before or after.
+- One question per line only.
+- Keep language simple and conversational.
+- Questions must feel practical and realistic.
+
+Difficulty progression:
+Question 1 -> easy
+Question 2 -> easy
+Question 3 -> medium
+Question 4 -> medium
+Question 5 -> hard
+
+Make questions based on the candidate's role, experience,interviewMode, projects, skills, and resume details.`,
+      input: `Role:${role}
+Experience:${experience || level}
+InterviewMode:${type}
+Projects:${projects.join(", ") || "Not specified"}
+Skills:${skills.join(", ") || "Not specified"},
+Resume:${clampText(resumeText || resumeSummary, 3500)}`,
       schema: {
         type: "object",
         additionalProperties: false,
@@ -388,8 +445,8 @@ export async function generateInterviewQuestions({ role = "Software Developer", 
         properties: {
           questions: {
             type: "array",
-            minItems: 25,
-            maxItems: 25,
+            minItems: 5,
+            maxItems: 5,
             items: { type: "string" },
           },
         },
@@ -397,7 +454,8 @@ export async function generateInterviewQuestions({ role = "Software Developer", 
     })
 
     if (!result) return { questions: fallbackQuestions, ...localProvider }
-    return { questions: result.json.questions, provider: result.provider, model: result.model }
+    const questions = result.json.questions?.length ? result.json.questions : normalizeQuestionLines(result.json)
+    return { questions: questions.slice(0, 5), provider: result.provider, model: result.model }
   } catch (error) {
     return { questions: fallbackQuestions, ...localProvider, aiError: error.message }
   }
@@ -410,30 +468,80 @@ export async function evaluateAnswer({ question = "", answer = "", role = "", ty
     const result = await callAiJson({
       schemaName: "answer_evaluation",
       instructions:
-        "You are a strict but helpful interview evaluator. Score the answer against the question, explain the score, and give practical coaching.",
-      input: JSON.stringify({
-        role,
-        type,
-        level,
-        question,
-        answer: clampText(answer, 8000),
-        resumeSummary: clampText(resumeSummary, 2500),
-      }),
+        `You are a professional human interviewer evaluating a candidate's answer in a real interview.
+
+Evaluate naturally and fairly, like a real person would.
+
+Score the answer in these areas (0 to 10):
+
+1. Confidence - Does the answer sound clear, confident, and well-presented?
+2. Communication - Is the language simple, clear, and easy to understand?
+3. Correctness - Is the answer accurate, relevant, and complete?
+
+Rules:
+- Be realistic and unbiased.
+- Do not give random high scores.
+- If the answer is weak, score low.
+- If the answer is strong and detailed, score high.
+- Consider clarity, structure, and relevance.
+
+Calculate:
+finalScore = average of confidence, communication, and correctness (rounded to nearest whole number).
+
+Feedback Rules:
+- Write natural human feedback.
+- 10 to 15 words only.
+- Sound like real interview feedback.
+- Can suggest improvement if needed.
+- Do NOT repeat the question.
+- Do NOT explain scoring.
+- Keep tone professional and honest.
+
+Return ONLY valid JSON in this format:
+
+{
+  "confidence": number,
+  "communication": number,
+  "correctness": number,
+  "finalScore": number,
+  "feedback": "short human feedback"
+}`,
+      input: `Question: ${question}
+Answer: ${clampText(answer, 8000)}
+
+Role: ${role}
+InterviewMode: ${type}
+Level: ${level}
+Resume: ${clampText(resumeSummary, 2500)}`,
       schema: {
         type: "object",
         additionalProperties: false,
-        required: ["score", "feedback", "strengths", "improvements"],
+        required: ["confidence", "communication", "correctness", "finalScore", "feedback"],
         properties: {
-          score: { type: "integer", minimum: 0, maximum: 100 },
+          confidence: { type: "integer", minimum: 0, maximum: 10 },
+          communication: { type: "integer", minimum: 0, maximum: 10 },
+          correctness: { type: "integer", minimum: 0, maximum: 10 },
+          finalScore: { type: "integer", minimum: 0, maximum: 10 },
           feedback: { type: "string" },
-          strengths: { type: "array", minItems: 1, maxItems: 4, items: { type: "string" } },
-          improvements: { type: "array", minItems: 1, maxItems: 4, items: { type: "string" } },
         },
       },
     })
 
     if (!result) return fallback
-    return { ...fallback, ...result.json, provider: result.provider, model: result.model }
+    return {
+      ...fallback,
+      ...result.json,
+      score: result.json.finalScore,
+      strengths: [
+        result.json.confidence >= 7 ? "Confident delivery" : "Attempted clear delivery",
+        result.json.communication >= 7 ? "Clear communication" : "Basic communication",
+      ],
+      improvements: [
+        result.json.correctness >= 7 ? "Add more depth where useful" : "Improve answer accuracy and completeness",
+      ],
+      provider: result.provider,
+      model: result.model,
+    }
   } catch (error) {
     return { ...fallback, aiError: error.message }
   }
@@ -457,6 +565,10 @@ export async function generateInterviewReport(interview) {
           question: item.question,
           answer: item.answer,
           score: item.score,
+          confidence: item.confidence,
+          communication: item.communication,
+          correctness: item.correctness,
+          voiceConfidence: item.voiceConfidence,
           feedback: item.feedback,
           strengths: item.strengths,
           improvements: item.improvements,

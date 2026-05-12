@@ -6,6 +6,7 @@ import authRouter from './routes/auth.rout.js';
 import resumeRouter from './routes/resume.route.js';
 import interviewRouter from './routes/interview.route.js';
 import paymentRouter from './routes/payment.route.js';
+import adminRouter from './routes/admin.route.js';
 dotenv.config();
 import cors from "cors";
 
@@ -51,6 +52,7 @@ app.use("/api/auth",authRouter)
 app.use("/api/resume", resumeRouter)
 app.use("/api/interviews", interviewRouter)
 app.use("/api/payments", paymentRouter)
+app.use("/api/admin", adminRouter)
 
 const PORT = process.env.PORT || 6000;
 

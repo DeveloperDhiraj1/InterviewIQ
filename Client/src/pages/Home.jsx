@@ -160,16 +160,16 @@ function Home() {
   }
 
   return (
-    <main className='min-h-screen bg-[#f5f7fb] text-[#111827]'>
-      <header className='sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur'>
+    <main className='app-shell text-[#111827]'>
+      <header className='sticky top-0 z-30 border-b border-white/60 bg-white/75 backdrop-blur-xl'>
         <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6'>
           <Link to='/' className='flex items-center gap-3'>
-            <span className='grid h-10 w-10 place-items-center rounded-lg bg-[#111827] text-white shadow-sm'>
+            <span className='btn-dark grid h-10 w-10 place-items-center rounded-lg'>
               <FiMic size={20} />
             </span>
             <div>
               <p className='text-base font-semibold'>InterviewIQ</p>
-              <p className='text-xs text-slate-500'>AI interview SaaS</p>
+              <p className='text-xs text-slate-500'>Premium AI interview SaaS</p>
             </div>
           </Link>
 
@@ -177,18 +177,19 @@ function Home() {
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/interview'>Interview</Link>
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/history'>Reports</Link>
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/pricing'>Pricing</Link>
+            {currentUser?.isAdmin && <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/admin'>Admin</Link>}
           </nav>
 
           <div className='flex items-center gap-2'>
-            <span className='hidden items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 sm:inline-flex'>
+            <span className='chip hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold sm:inline-flex'>
               <FiAward /> {credits} credits
             </span>
             {currentUser ? (
-              <button onClick={logout} className='inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white'>
+              <button onClick={logout} className='btn-dark inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold'>
                 <FiLogOut /> Logout
               </button>
             ) : (
-              <Link to='/auth' className='inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white'>
+              <Link to='/auth' className='btn-dark inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold'>
                 <FiUser /> Sign in
               </Link>
             )}
@@ -197,7 +198,7 @@ function Home() {
       </header>
 
       <section className='mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1.08fr_0.92fr]'>
-        <Motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className='overflow-hidden rounded-2xl bg-slate-950 text-white shadow-xl'>
+        <Motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className='hero-panel overflow-hidden rounded-2xl text-white'>
           <div className='grid min-h-[380px] gap-6 p-6 md:grid-cols-[1fr_280px] md:p-8'>
             <div className='flex flex-col justify-between'>
               <div>
@@ -208,7 +209,7 @@ function Home() {
                 </p>
               </div>
               <div className='mt-8 flex flex-col gap-3 sm:flex-row'>
-                <Link to='/interview' className='inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950'>
+                <Link to='/interview' className='btn-primary inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
                   <FiPlay /> Start interview
                 </Link>
                 <Link to='/history' className='inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-5 py-3 text-sm font-semibold text-white'>
@@ -217,7 +218,7 @@ function Home() {
               </div>
             </div>
             <div className='grid content-end gap-3'>
-              <img src={techAsset} alt='' className='h-36 w-full rounded-xl object-cover' />
+              <img src={techAsset} alt='' className='h-36 w-full rounded-xl border border-white/10 object-cover shadow-2xl' />
               <div className='rounded-xl bg-white/10 p-4 backdrop-blur'>
                 <p className='text-sm text-slate-300'>Readiness score</p>
                 <div className='mt-2 flex items-end gap-3'>
@@ -234,8 +235,8 @@ function Home() {
             [confidenceAsset, 'Confidence', averageScore >= 80 ? 'Strong' : 'Building', 'bg-white'],
             [historyAsset, 'Sessions', history.length, 'bg-white'],
             [resumeAsset, 'Resume lab', resumeReport ? `${resumeReport.score} ATS` : 'Ready', 'bg-white'],
-          ].map(([image, label, value, bg]) => (
-            <div key={label} className={`flex items-center gap-4 rounded-2xl border border-slate-200 ${bg} p-4 shadow-sm`}>
+          ].map(([image, label, value]) => (
+            <div key={label} className={`premium-card flex items-center gap-4 rounded-2xl p-4`}>
               <img src={image} alt='' className='h-16 w-16 rounded-xl object-cover' />
               <div>
                 <p className='text-sm text-slate-500'>{label}</p>
@@ -248,7 +249,7 @@ function Home() {
 
       <section className='mx-auto grid max-w-7xl gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[260px_1fr]'>
         <aside className='space-y-4'>
-          <div className='rounded-2xl border border-slate-200 bg-white p-3 shadow-sm'>
+          <div className='premium-card rounded-2xl p-3'>
             {[
               ['interview', FiMic, 'Practice'],
               ['resume', FiFileText, 'Resume'],
@@ -258,15 +259,15 @@ function Home() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`mb-1 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold last:mb-0 ${
-                  activeTab === tab ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+                  activeTab === tab ? 'btn-dark' : 'text-slate-600 hover:bg-white/80'
                 }`}
               >
-                <Icon /> {label}
+                {React.createElement(Icon)} {label}
               </button>
             ))}
           </div>
 
-          <div className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+          <div className='premium-card rounded-2xl p-5'>
             <p className='text-sm font-semibold'>Focus this week</p>
             <div className='mt-4 grid gap-3'>
               {focusTips.map((tip) => (
@@ -280,7 +281,7 @@ function Home() {
 
         {activeTab === 'interview' && (
           <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='grid gap-6 xl:grid-cols-[1fr_320px]'>
-            <div className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+            <div className='premium-card rounded-2xl p-5'>
               <div className='flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between'>
                 <div>
                   <p className='text-sm font-semibold text-emerald-600'>Quick practice</p>
@@ -301,11 +302,11 @@ function Home() {
               <div className='mt-5 grid gap-4 sm:grid-cols-2'>
                 <label className='grid gap-2 text-sm font-semibold text-slate-700'>
                   Target role
-                  <input value={role} onChange={(event) => setRole(event.target.value)} className='rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 outline-none focus:border-slate-900' />
+                  <input value={role} onChange={(event) => setRole(event.target.value)} className='soft-input rounded-lg px-3 py-3' />
                 </label>
                 <label className='grid gap-2 text-sm font-semibold text-slate-700'>
                   Interview type
-                  <select value={interviewType} onChange={(event) => { setInterviewType(event.target.value); setQuestionIndex(0); setFeedback(null) }} className='rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 outline-none focus:border-slate-900'>
+                  <select value={interviewType} onChange={(event) => { setInterviewType(event.target.value); setQuestionIndex(0); setFeedback(null) }} className='soft-input rounded-lg px-3 py-3'>
                     <option value='technical'>Technical</option>
                     <option value='behavioral'>Behavioral</option>
                     <option value='hr'>HR</option>
@@ -313,18 +314,18 @@ function Home() {
                 </label>
               </div>
 
-              <div className='mt-5 rounded-2xl bg-slate-900 p-5 text-white'>
+              <div className='hero-panel mt-5 rounded-2xl p-5 text-white'>
                 <p className='text-sm text-slate-400'>Question {questionIndex + 1} of {questions.length}</p>
                 <p className='mt-3 text-xl font-semibold leading-relaxed'>{currentQuestion}</p>
               </div>
 
-              <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder='Type your spoken answer here...' className='mt-5 min-h-48 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 leading-relaxed outline-none focus:border-slate-900' />
-              <button onClick={submitAnswer} className='mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600'>
+              <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder='Type your spoken answer here...' className='soft-input mt-5 min-h-48 w-full resize-y rounded-xl p-4 leading-relaxed' />
+              <button onClick={submitAnswer} className='btn-primary mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
                 <FiPlay /> Analyze answer
               </button>
             </div>
 
-            <aside className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+            <aside className='premium-card rounded-2xl p-5'>
               <div className='flex items-center gap-3'>
                 <img src={aiAnswerAsset} alt='' className='h-14 w-14 rounded-xl object-cover' />
                 <div>
@@ -339,7 +340,7 @@ function Home() {
                   {feedback.improvements.map((item) => <p key={item} className='rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700'>{item}</p>)}
                 </div>
               ) : (
-                <p className='mt-6 rounded-xl bg-slate-100 p-4 text-sm leading-relaxed text-slate-600'>Submit an answer to receive scoring and coaching.</p>
+                <p className='premium-card-muted mt-6 rounded-xl p-4 text-sm leading-relaxed text-slate-600'>Submit an answer to receive scoring and coaching.</p>
               )}
             </aside>
           </Motion.section>
@@ -347,15 +348,15 @@ function Home() {
 
         {activeTab === 'resume' && (
           <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='grid gap-6 xl:grid-cols-[1fr_320px]'>
-            <div className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+            <div className='premium-card rounded-2xl p-5'>
               <h2 className='text-2xl font-semibold'>Resume analyzer</h2>
               <p className='mt-2 text-sm text-slate-500'>Paste your resume text and get quick ATS-style feedback.</p>
-              <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Paste resume content, project bullets, or job-targeted summary...' className='mt-5 min-h-80 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 leading-relaxed outline-none focus:border-slate-900' />
-              <button onClick={() => setResumeReport(analyzeResume(resumeText))} className='mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white'>
+              <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Paste resume content, project bullets, or job-targeted summary...' className='soft-input mt-5 min-h-80 w-full resize-y rounded-xl p-4 leading-relaxed' />
+              <button onClick={() => setResumeReport(analyzeResume(resumeText))} className='btn-dark mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
                 <FiTarget /> Analyze resume
               </button>
             </div>
-            <aside className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+            <aside className='premium-card rounded-2xl p-5'>
               <p className='font-semibold'>Resume report</p>
               {resumeReport ? (
                 <div className='mt-5 space-y-4'>
@@ -364,27 +365,27 @@ function Home() {
                   {resumeReport.suggestions.map((suggestion) => <p key={suggestion} className='rounded-xl bg-amber-50 p-3 text-sm leading-relaxed text-amber-900'>{suggestion}</p>)}
                 </div>
               ) : (
-                <p className='mt-5 rounded-xl bg-slate-100 p-4 text-sm text-slate-600'>Your report will appear here.</p>
+                <p className='premium-card-muted mt-5 rounded-xl p-4 text-sm text-slate-600'>Your report will appear here.</p>
               )}
             </aside>
           </Motion.section>
         )}
 
         {activeTab === 'analytics' && (
-          <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'>
+          <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='premium-card rounded-2xl p-5'>
             <div className='flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between'>
               <div>
                 <p className='text-sm font-semibold text-emerald-600'>Performance</p>
                 <h2 className='text-2xl font-semibold'>Progress dashboard</h2>
               </div>
-              <button onClick={exportReport} className='inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white'>
+              <button onClick={exportReport} className='btn-dark inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
                 <FiDownload /> Export report
               </button>
             </div>
             <div className='mt-5 grid gap-4 md:grid-cols-3'>
               {[[FiTrendingUp, 'Average score', averageScore], [FiBookOpen, 'Sessions', history.length], [FiAward, 'Credits left', credits]].map(([Icon, label, value]) => (
-                <div key={label} className='rounded-xl bg-slate-100 p-4'>
-                  <Icon className='text-emerald-500' />
+                <div key={label} className='premium-card-muted rounded-xl p-4'>
+                  {React.createElement(Icon, { className: 'text-emerald-500' })}
                   <p className='mt-4 text-sm text-slate-500'>{label}</p>
                   <p className='text-3xl font-semibold'>{value}</p>
                 </div>

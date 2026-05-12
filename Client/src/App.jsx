@@ -5,6 +5,7 @@ import Auth from './pages/Auth'
 import Interview from './pages/Interview'
 import History from './pages/History'
 import Pricing from './pages/Pricing'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path='/interview' element={<Interview />} />
       <Route path='/history' element={<History />} />
       <Route path='/pricing' element={<Pricing />} />
+      <Route path='/admin' element={<Admin />} />
     </Routes>
   )
 }

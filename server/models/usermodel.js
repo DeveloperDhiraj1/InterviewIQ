@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 100
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   resetPasswordToken: {
     type: String,
     select: false,
