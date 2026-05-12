@@ -58,4 +58,12 @@ Server is running on port 8000
 [32m[nodemon] starting `node index.js`[39m
 ◇ injected env (10) from .env // tip: ◈ e◇ injected env (10) from .env // tip: ⌘ suppress logsMongoDB connected successfully: InterviewIQ
 Server is running on port 8000
-[32m[nodemon] restarting due to changes..
+[32m[nodemon] restarting due to changes..[32m[n[32m[nodemon] starting `node index.js`[39m
+◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+SeMongoDB connected successfull[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (10) from .env // tip: ⌘ mu◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: tMongoDB connected successfully:MongoDB connected successfully: InterviewIQ
+[32m[nodemon] restarting due t[32m[nodemon] res[32m[nodemon] starting `node i[32m[nodemon]◇ injected env (10) from .env◇ injected env (10) from .env // tip: ⌁ auth for agents [www.vestauMongoDB connected successfully: IMongoDB connected successfully: InterviewIQ
+Server is running on port 8000
