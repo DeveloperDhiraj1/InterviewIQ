@@ -49,7 +49,20 @@ function Auth() {
           { withCredentials: true }
         )
         localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
-          localStorage.setItem('interviewiq-token', result.data.token)
+        localStorage.setItem('interviewiq-token', result.data.token)
+        navigate('/home')
+        return
+      }
+
+      if (mode === 'login') {
+        if (!email || !password) {
+          throw new Error('Enter email and password.')
+        }
+        const result = await axios.post(
+          `${serverUrl}/api/auth/login`,
+          { email, password },
+          { withCredentials: true }
+        )
         localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
         localStorage.setItem('interviewiq-token', result.data.token)
         navigate('/home')
