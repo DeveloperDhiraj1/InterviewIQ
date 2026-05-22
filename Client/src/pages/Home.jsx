@@ -9,11 +9,13 @@ import {
   FiFileText,
   FiLogOut,
   FiMic,
+  FiMenu,
   FiPlay,
   FiRefreshCw,
   FiTarget,
   FiTrendingUp,
   FiUser,
+  FiX,
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import jsPDF from 'jspdf/dist/jspdf.es.min.js'
@@ -93,6 +95,8 @@ function analyzeResume(text) {
 }
 
 function Home() {
+  
+  const [menuOpen, setMenuOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('interview')
   const [role, setRole] = useState('Frontend Developer')
   const [interviewType, setInterviewType] = useState('technical')
@@ -169,7 +173,7 @@ function Home() {
 
   return (
     <main className='app-shell text-[#111827]'>
-      <header className='sticky top-0 z-30 border-b border-white/60 bg-white/75 backdrop-blur-xl'>
+      <header className='sticky top-0 z-30 border-b border-white/60 bg-white/75 backdrop-blur-xl relative'>
         <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6'>
           <Link to='/' className='flex items-center gap-3'>
             <span className='btn-dark grid h-10 w-10 place-items-center rounded-lg'>
@@ -181,15 +185,21 @@ function Home() {
             </div>
           </Link>
 
-          <nav className='hidden items-center gap-2 md:flex'>
-            <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/interview'>Interview</Link>
-            <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/about'>About</Link>
-            <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/history'>Reports</Link>
-            <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/pricing'>Pricing</Link>
-            {currentUser?.isAdmin && <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/admin'>Admin</Link>}
-          </nav>
-
           <div className='flex items-center gap-2'>
+            <button onClick={() => setMenuOpen((open) => !open)} className='inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm md:hidden'>
+              {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+            </button>
+
+            <nav className={`absolute inset-x-4 top-full mt-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl md:static md:mt-0 md:flex md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none ${menuOpen ? 'block' : 'hidden'} md:block`}>
+              <div className='flex flex-col gap-3 md:flex-row md:items-center md:gap-2'>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/interview'>Interview</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/about'>About</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/history'>Reports</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/pricing'>Pricing</Link>
+                {currentUser?.isAdmin && <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/admin'>Admin</Link>}
+              </div>
+            </nav>
+
             <span className='chip hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold sm:inline-flex'>
               <FiAward /> {credits} credits
             </span>

@@ -8,6 +8,9 @@ services:
     buildCommand: npm install
     startCommand: npm start
     autoDeploy: true
+    env:
+      CLIENT_URL: "https://interviewiq-client-nzo5.onrender.com"
+      FRONTEND_URL: "https://interviewiq-client-nzo5.onrender.com"
 
 static_sites:
   - type: static_site
@@ -18,3 +21,5 @@ static_sites:
     publishPath: dist
     plan: starter
     autoDeploy: true
+    env:
+      VITE_API_URL: "https://interviewiq-1-l763.onrender.com"
