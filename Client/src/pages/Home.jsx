@@ -168,6 +168,7 @@ function Home() {
 
   const logout = () => {
     localStorage.removeItem('interviewiq-user')
+    localStorage.removeItem('interviewiq-token')
     setCurrentUser(null)
   }
 

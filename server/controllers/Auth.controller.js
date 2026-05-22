@@ -42,7 +42,7 @@ export const register = async (req, res) => {
 
     const userResponse = user.toObject()
     delete userResponse.password
-    return res.status(201).json({ message: "Registration successful", user: userResponse })
+    return res.status(201).json({ message: "Registration successful", user: userResponse, token })
   } catch (error) {
     return res.status(500).json({ message: `Registration error ${error.message}` })
   }
@@ -77,7 +77,7 @@ export const login = async (req, res) => {
 
     const userResponse = user.toObject()
     delete userResponse.password
-    return res.status(200).json({ message: "Login successful", user: userResponse })
+    return res.status(200).json({ message: "Login successful", user: userResponse, token })
   } catch (error) {
     return res.status(500).json({ message: `Login error ${error.message}` })
   }
@@ -136,7 +136,7 @@ export const googleAuth = async (req, res) => {
 
     const userResponse = user.toObject()
     delete userResponse.password
-    return res.status(200).json({ message: "Login successful", user: userResponse })
+    return res.status(200).json({ message: "Login successful", user: userResponse, token })
   } catch (error) {
     return res.status(500).json({ message: `Google auth error ${error.message}` })
   }
@@ -167,7 +167,7 @@ export const demoAuth = async (req, res) => {
 
     const userResponse = user.toObject()
     delete userResponse.password
-    return res.status(200).json({ message: "Demo login successful", user: userResponse })
+    return res.status(200).json({ message: "Demo login successful", user: userResponse, token })
   } catch (error) {
     return res.status(500).json({ message: `Demo auth error ${error.message}` })
   }

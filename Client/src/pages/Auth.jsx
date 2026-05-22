@@ -49,20 +49,9 @@ function Auth() {
           { withCredentials: true }
         )
         localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
-        navigate('/home')
-        return
-      }
-
-      if (mode === 'login') {
-        if (!email || !password) {
-          throw new Error('Enter email and password.')
-        }
-        const result = await axios.post(
-          `${serverUrl}/api/auth/login`,
-          { email, password },
-          { withCredentials: true }
-        )
+          localStorage.setItem('interviewiq-token', result.data.token)
         localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+        localStorage.setItem('interviewiq-token', result.data.token)
         navigate('/home')
         return
       }
@@ -97,6 +86,7 @@ function Auth() {
     try {
       const result = await axios.post(`${serverUrl}/api/auth/demo`, {}, { withCredentials: true })
       localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+      localStorage.setItem('interviewiq-token', result.data.token)
       navigate('/home')
     } catch (error) {
       setStatus(error?.response?.data?.message || 'Demo login failed.')

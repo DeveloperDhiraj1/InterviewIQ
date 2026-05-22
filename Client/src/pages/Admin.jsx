@@ -127,6 +127,7 @@ function Admin() {
         return
       }
       localStorage.setItem('interviewiq-user', JSON.stringify(result.data.user))
+      localStorage.setItem('interviewiq-token', result.data.token)
       await loadAdmin('')
     } catch (error) {
       setAdminUnlocked(false)
