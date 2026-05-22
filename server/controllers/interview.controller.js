@@ -1,19 +1,28 @@
 import Interview from "../models/interview.model.js"
 import User from "../models/usermodel.js"
+import AdminSettings from "../models/adminSettings.model.js"
 import { evaluateAnswer, generateInterviewQuestions, generateInterviewReport } from "../utils/interviewAi.js"
 
 const INTERVIEW_COST = 10
 
+const getPlatformSettings = () =>
+  AdminSettings.findOneAndUpdate(
+    { key: "platform" },
+    { $setOnInsert: { key: "platform" } },
+    { upsert: true, new: true }
+  )
+
 export const createInterview = async (req, res) => {
   try {
     const { role, type, level, resumeSummary, experience, projects = [], skills = [], resumeText = "" } = req.body
-    const user = await User.findById(req.userId)
+    const [user, settings] = await Promise.all([User.findById(req.userId), getPlatformSettings()])
+    const interviewCost = Number(settings?.creditsPerInterview) || INTERVIEW_COST
 
     if (!user) {
       return res.status(404).json({ message: "User not found" })
     }
 
-    if (user.credits < INTERVIEW_COST) {
+    if (user.credits < interviewCost) {
       return res.status(402).json({ message: "Not enough credits. Please purchase more credits." })
     }
 
@@ -26,6 +35,7 @@ export const createInterview = async (req, res) => {
       projects,
       skills,
       resumeText,
+      aiProvider: settings?.aiProvider,
     })
     const interview = await Interview.create({
       user: req.userId,
@@ -45,11 +55,15 @@ export const createInterview = async (req, res) => {
       })),
     })
 
-    user.credits -= INTERVIEW_COST
+    user.credits -= interviewCost
     await user.save()
 
     return res.status(201).json({ interview, credits: user.credits, aiError: generated.aiError })
   } catch (error) {
+    if (error.message?.startsWith("AI question generation failed")) {
+      return res.status(502).json({ message: error.message })
+    }
+
     return res.status(500).json({ message: `Create interview error ${error.message}` })
   }
 }
@@ -57,7 +71,10 @@ export const createInterview = async (req, res) => {
 export const submitAnswer = async (req, res) => {
   try {
     const { interviewId, questionIndex, answer, voiceConfidence = 0 } = req.body
-    const interview = await Interview.findOne({ _id: interviewId, user: req.userId })
+    const [interview, settings] = await Promise.all([
+      Interview.findOne({ _id: interviewId, user: req.userId }),
+      getPlatformSettings(),
+    ])
 
     if (!interview) {
       return res.status(404).json({ message: "Interview not found" })
@@ -75,6 +92,7 @@ export const submitAnswer = async (req, res) => {
       type: interview.type,
       level: interview.level,
       resumeSummary: interview.resumeSummary,
+      aiProvider: settings?.aiProvider,
     })
     target.answer = answer
     target.score = evaluation.score
@@ -95,7 +113,7 @@ export const submitAnswer = async (req, res) => {
     interview.status = answered.length === interview.questions.length ? "completed" : "active"
 
     if (interview.status === "completed") {
-      interview.report = await generateInterviewReport(interview)
+      interview.report = await generateInterviewReport(interview, settings?.aiProvider)
     }
 
     await interview.save()
@@ -116,13 +134,16 @@ export const getHistory = async (req, res) => {
 
 export const getInterviewReport = async (req, res) => {
   try {
-    const interview = await Interview.findOne({ _id: req.params.id, user: req.userId })
+    const [interview, settings] = await Promise.all([
+      Interview.findOne({ _id: req.params.id, user: req.userId }),
+      getPlatformSettings(),
+    ])
     if (!interview) {
       return res.status(404).json({ message: "Interview not found" })
     }
 
     if (!interview.report?.summary && interview.questions.some((item) => item.answer)) {
-      interview.report = await generateInterviewReport(interview)
+      interview.report = await generateInterviewReport(interview, settings?.aiProvider)
       await interview.save()
     }
 

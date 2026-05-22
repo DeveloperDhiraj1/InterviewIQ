@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion as Motion } from 'framer-motion'
 import { FiArrowLeft, FiCheckCircle, FiMic, FiSend, FiUploadCloud, FiVolume2, FiSquare, FiRadio } from 'react-icons/fi'
@@ -41,6 +41,12 @@ function Interview() {
   const [speechSupported, setSpeechSupported] = useState(() => Boolean(getSpeechRecognition()) && 'speechSynthesis' in window)
   const [voiceConfidence, setVoiceConfidence] = useState(0)
   const [voiceDuration, setVoiceDuration] = useState(0)
+  // Per-question timer (seconds)
+  const QUESTION_TIME = 120
+  const [timeLeft, setTimeLeft] = useState(0)
+  const timerRef = useRef(null)
+  const handleTimeUpRef = useRef(null)
+  
   const recognitionRef = useRef(null)
   const transcriptBaseRef = useRef('')
   const speechStartedAtRef = useRef(0)
@@ -51,6 +57,46 @@ function Interview() {
       window.speechSynthesis?.cancel()
     }
   }, [])
+
+  useEffect(() => {
+    // Start/reset timer when entering the interview step or changing question
+    if (step === 2 && interview) {
+      // reset time (defer to avoid sync state update warnings)
+      setTimeout(() => setTimeLeft(QUESTION_TIME), 0)
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            // time up
+            clearInterval(timerRef.current)
+            timerRef.current = null
+            handleTimeUpRef.current?.()
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+      setTimeout(() => setTimeLeft(0), 0)
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
+    // restart when activeQuestion changes
+  }, [step, interview, activeQuestion])
+
+  
 
   const analyzeResume = async (file) => {
     if (!file) {
@@ -67,7 +113,12 @@ function Interview() {
       setResumeReport(data.report)
       setResumeText(data.resumeText || '')
       if (data.report?.role) setRole(data.report.role)
-      setMessage('Resume uploaded successfully. AI analyzed your resume and will generate 5 questions from it.')
+      const qCount = data.questionCount
+      if (typeof qCount === 'number') {
+        setMessage(`Resume uploaded successfully. The interview will contain ${qCount} questions.`)
+      } else {
+        setMessage('Resume uploaded successfully.')
+      }
     } catch (error) {
       setMessage(error?.response?.data?.message || 'Resume analysis failed. Sign in first or use demo auth.')
     } finally {
@@ -106,11 +157,8 @@ function Interview() {
         const user = JSON.parse(savedUser)
         localStorage.setItem('interviewiq-user', JSON.stringify({ ...user, credits: data.credits }))
       }
-      const providerMessage = data.interview.provider === 'openai'
-        ? 'OpenAI questions generated.'
-        : data.interview.provider === 'gemini'
-          ? 'Gemini questions generated.'
-          : 'Using local fallback questions.'
+      const providerMessage =
+        'InterviewIQ AI generated personalized interview questions from your resume.'
       const errorMessage = data.aiError ? ` AI error: ${data.aiError}` : ''
       setMessage(`Interview generated. 10 credits used. Credits left: ${data.credits}. ${providerMessage}${errorMessage}`)
       setStep(2)
@@ -121,8 +169,13 @@ function Interview() {
     }
   }
 
-  const submitAnswer = async () => {
+  const submitAnswer = useCallback(async () => {
     try {
+      // stop and clear timer to avoid duplicate submits
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
       setLoading(true)
       setMessage('')
       const { data } = await api.post('/api/interviews/answer', {
@@ -141,7 +194,19 @@ function Interview() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [interview, activeQuestion, answer, voiceConfidence])
+
+  // wire up a stable ref handler so the timer effect doesn't need to depend on a changing function
+  useEffect(() => {
+    handleTimeUpRef.current = () => {
+      recognitionRef.current?.stop()
+      window.speechSynthesis?.cancel()
+      setIsListening(false)
+      setIsSpeaking(false)
+      setMessage('Time is up for this question — answer submitted.')
+      submitAnswer()
+    }
+  }, [submitAnswer])
 
   const nextQuestion = () => {
     recognitionRef.current?.stop()
@@ -261,7 +326,7 @@ function Interview() {
               <p className='text-sm font-semibold text-emerald-300'>AI interview agent</p>
               <h1 className='mt-2 max-w-3xl text-4xl font-semibold leading-tight'>Generate a role-specific round from your resume.</h1>
               <p className='mt-3 max-w-2xl text-sm leading-6 text-slate-300'>
-                Upload your resume PDF and AI will analyze it to generate 5 interview questions automatically.
+                Upload your resume PDF and AI will analyze it to generate 15 interview questions automatically.
               </p>
             </div>
             <img src={pdfAsset} alt='' className='h-32 w-full rounded-xl border border-white/10 object-cover shadow-2xl md:h-full' />
@@ -322,7 +387,12 @@ function Interview() {
 
               {resumeReport && (
                 <div className='mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800'>
-                  <p className='font-semibold'>{resumeReport.role || role} | {resumeReport.experience || 'Experience not specified'} | {resumeReport.provider || 'local'} analysis</p>
+                  <p className='font-semibold'>
+                    {resumeReport.role || role} | {resumeReport.experience || 'Experience not specified'} |{' '}
+                    {resumeReport.provider
+                      ? `${resumeReport.provider} analysis`
+                      : 'AI analysis failed'}
+                  </p>
                   <p className='mt-2'>{resumeReport.summary}</p>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     {(resumeReport.skills || resumeReport.matchedSkills || []).map((skill) => (
@@ -343,9 +413,12 @@ function Interview() {
             <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='premium-card rounded-2xl p-5'>
               <div className='hero-panel rounded-2xl p-5 text-white'>
                 <div className='flex items-center justify-between gap-4'>
-                  <p className='text-sm text-slate-400'>Question {activeQuestion + 1} of {interview.questions.length}</p>
+                  <div>
+                    <p className='text-sm text-slate-400'>Question {activeQuestion + 1} of {interview.questions.length}</p>
+                    <p className='text-xs text-slate-300 mt-1'>Time left: {timeLeft}s</p>
+                  </div>
                   <span className='rounded-full bg-slate-800 px-3 py-1 text-xs uppercase text-slate-300'>
-                    {interview.provider === 'openai' ? 'OpenAI' : interview.provider === 'gemini' ? 'Gemini' : 'Local'}
+                    InterviewIQ AI
                   </span>
                 </div>
                 <h2 className='mt-3 text-2xl font-semibold leading-relaxed'>{interview.questions[activeQuestion].question}</h2>
@@ -413,24 +486,43 @@ function Interview() {
                 <div>
                   <p className='text-sm font-semibold text-emerald-600'>Generated report</p>
                   <h2 className='mt-1 text-3xl font-semibold'>{interview.role}</h2>
-                  <p className='mt-2 text-sm text-slate-500'>{interview.type} round | {interview.level} level | {interview.provider || 'local'} AI</p>
+                  <p className='mt-2 text-sm text-slate-500'>{interview.type} round | {interview.level} level | InterviewIQ AI Analysis</p>
                 </div>
                 <div className='rounded-xl bg-slate-100 px-5 py-4 text-center'>
                   <p className='text-xs font-semibold uppercase text-slate-500'>Overall score</p>
-                  <p className='text-4xl font-semibold'>{interview.overallScore || 0}<span className='text-base text-slate-500'>/10</span></p>
+                  <p className='text-4xl font-semibold'>{interview.report?.overallScore || interview.overallScore || 0}<span className='text-base text-slate-500'>/10</span></p>
                 </div>
               </div>
 
               <div className='mt-5 rounded-xl bg-emerald-50 p-5 text-emerald-900'>
-                <p className='text-sm font-semibold uppercase'>Readiness: {interview.report?.readiness || 'in progress'}</p>
+                <p className='text-sm font-semibold uppercase'>Readiness: {interview.report?.hiringReadiness || 'in progress'}</p>
                 <p className='mt-2 text-sm leading-6'>{interview.report?.summary || 'Answer all questions to generate a complete AI report.'}</p>
+                {interview.report?.industryReadiness && (
+                  <p className='mt-3 text-sm font-semibold'>{interview.report.industryReadiness}</p>
+                )}
+              </div>
+
+              <div className='mt-5 grid gap-3 md:grid-cols-4'>
+                {[
+                  ['Technical', interview.report?.technicalScore || 0],
+                  ['Communication', interview.report?.communicationScore || 0],
+                  ['Confidence', interview.report?.confidenceScore || 0],
+                  ['Problem solving', interview.report?.problemSolvingScore || 0],
+                ].map(([label, value]) => (
+                  <div key={label} className='rounded-xl bg-slate-100 p-4'>
+                    <p className='text-xs font-semibold uppercase text-slate-500'>{label}</p>
+                    <p className='mt-1 text-2xl font-semibold'>{value}/10</p>
+                  </div>
+                ))}
               </div>
 
               <div className='mt-5 grid gap-4 md:grid-cols-3'>
                 {[
                   ['Strengths', interview.report?.strengths || []],
+                  ['Weaknesses', interview.report?.weaknesses || []],
                   ['Improvements', interview.report?.improvements || []],
                   ['Next steps', interview.report?.nextSteps || []],
+                  ['Recommended topics', interview.report?.recommendedTopics || []],
                 ].map(([title, items]) => (
                   <div key={title} className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
                     <h3 className='font-semibold'>{title}</h3>
@@ -442,6 +534,23 @@ function Interview() {
                   </div>
                 ))}
               </div>
+
+              {(interview.report?.finalVerdict || interview.report?.motivationalNote) && (
+                <div className='mt-5 grid gap-4 md:grid-cols-2'>
+                  {interview.report?.finalVerdict && (
+                    <div className='rounded-xl bg-slate-900 p-5 text-white'>
+                      <p className='text-xs font-semibold uppercase text-slate-400'>Interviewer verdict</p>
+                      <p className='mt-2 text-sm leading-6 text-slate-100'>{interview.report.finalVerdict}</p>
+                    </div>
+                  )}
+                  {interview.report?.motivationalNote && (
+                    <div className='rounded-xl bg-emerald-50 p-5 text-emerald-900'>
+                      <p className='text-xs font-semibold uppercase'>Motivational note</p>
+                      <p className='mt-2 text-sm leading-6'>{interview.report.motivationalNote}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className='mt-5 grid gap-3'>
                 {interview.questions.map((item, index) => (

@@ -16,6 +16,7 @@ import {
   FiUser,
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
+import jsPDF from 'jspdf/dist/jspdf.es.min.js'
 import aiAnswerAsset from '../assets/ai-ans.png'
 import confidenceAsset from '../assets/confi.png'
 import historyAsset from '../assets/history.png'
@@ -100,6 +101,7 @@ function Home() {
   const [feedback, setFeedback] = useState(null)
   const [resumeText, setResumeText] = useState('')
   const [resumeReport, setResumeReport] = useState(null)
+  const [resumeMessage, setResumeMessage] = useState('')
   const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem('interviewiq-history')
     return saved ? JSON.parse(saved) : starterHistory
@@ -144,14 +146,20 @@ function Home() {
   }
 
   const exportReport = () => {
-    const rows = history.map((item) => `${item.date} | ${item.role} | ${item.type} | ${item.score}`).join('\n')
-    const blob = new Blob([`InterviewIQ Report\nAverage score: ${averageScore}\nCredits: ${credits}\n\n${rows}`], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'interviewiq-report.txt'
-    link.click()
-    URL.revokeObjectURL(url)
+    const reportLines = [
+      'InterviewIQ Report',
+      `Average score: ${averageScore}`,
+      `Credits: ${credits}`,
+      '',
+      'Date | Role | Type | Score',
+      '----------------------------------------',
+      ...history.map((item) => `${item.date} | ${item.role} | ${item.type} | ${item.score}`),
+    ]
+
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+    doc.setFontSize(12)
+    doc.text(reportLines, 40, 50)
+    doc.save('interviewiq-report.pdf')
   }
 
   const logout = () => {
@@ -175,6 +183,7 @@ function Home() {
 
           <nav className='hidden items-center gap-2 md:flex'>
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/interview'>Interview</Link>
+            <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/about'>About</Link>
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/history'>Reports</Link>
             <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/pricing'>Pricing</Link>
             {currentUser?.isAdmin && <Link className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/admin'>Admin</Link>}
@@ -352,9 +361,21 @@ function Home() {
               <h2 className='text-2xl font-semibold'>Resume analyzer</h2>
               <p className='mt-2 text-sm text-slate-500'>Paste your resume text and get quick ATS-style feedback.</p>
               <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Paste resume content, project bullets, or job-targeted summary...' className='soft-input mt-5 min-h-80 w-full resize-y rounded-xl p-4 leading-relaxed' />
-              <button onClick={() => setResumeReport(analyzeResume(resumeText))} className='btn-dark mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
+              <button
+                onClick={() => {
+                  if (!resumeText || !resumeText.trim()) {
+                    setResumeMessage('Please paste your resume text first.')
+                    setResumeReport(null)
+                    return
+                  }
+                  setResumeReport(analyzeResume(resumeText))
+                  setResumeMessage('')
+                }}
+                className='btn-dark mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'
+              >
                 <FiTarget /> Analyze resume
               </button>
+              {resumeMessage && <p className='mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900'>{resumeMessage}</p>}
             </div>
             <aside className='premium-card rounded-2xl p-5'>
               <p className='font-semibold'>Resume report</p>

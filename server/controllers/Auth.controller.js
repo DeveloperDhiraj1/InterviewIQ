@@ -64,9 +64,15 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" })
     }
+    if (user.isBanned) {
+      return res.status(403).json({ message: "This account has been suspended. Contact support." })
+    }
 
     const token = await gentoken(user._id)
     createAuthCookie(res, token)
+    user.lastLoginAt = new Date()
+    user.lastLoginIp = req.ip
+    await user.save()
 
     const userResponse = user.toObject()
     delete userResponse.password
@@ -117,9 +123,15 @@ export const googleAuth = async (req, res) => {
       })
       await user.save()
     }
+    if (user.isBanned) {
+      return res.status(403).json({ message: "This account has been suspended. Contact support." })
+    }
 
     const token = await gentoken(user._id)
     createAuthCookie(res, token)
+    user.lastLoginAt = new Date()
+    user.lastLoginIp = req.ip
+    await user.save()
 
     const userResponse = user.toObject()
     delete userResponse.password
@@ -142,9 +154,15 @@ export const demoAuth = async (req, res) => {
       })
       await user.save()
     }
+    if (user.isBanned) {
+      return res.status(403).json({ message: "This account has been suspended. Contact support." })
+    }
 
     const token = await gentoken(user._id)
     createAuthCookie(res, token)
+    user.lastLoginAt = new Date()
+    user.lastLoginIp = req.ip
+    await user.save()
 
     const userResponse = user.toObject()
     delete userResponse.password

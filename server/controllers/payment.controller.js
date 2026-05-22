@@ -1,87 +1,235 @@
-import crypto from "crypto"
 import Razorpay from "razorpay"
+import crypto from "crypto"
 import User from "../models/usermodel.js"
+import Coupon from "../models/coupon.model.js"
+import Payment from "../models/payment.model.js"
 
-const creditPlans = {
-  starter: { credits: 50, amount: 9900 },
-  pro: { credits: 150, amount: 24900 },
-  premium: { credits: 400, amount: 59900 },
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+})
+
+const plans = {
+  starter: {
+    credits: 50,
+    amount: 49,
+  },
+  pro: {
+    credits: 150,
+    amount: 99,
+  },
+  premium: {
+    credits: 400,
+    amount: 149,
+  },
 }
 
-function getRazorpay() {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    return null
-  }
-
-  return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  })
-}
-
-export const createPaymentOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
-    const { plan = "starter" } = req.body
-    const selectedPlan = creditPlans[plan]
+    const { plan, couponCode } = req.body
+
+    const selectedPlan = plans[plan]
 
     if (!selectedPlan) {
-      return res.status(400).json({ message: "Invalid credit plan" })
-    }
-
-    const razorpay = getRazorpay()
-    if (!razorpay) {
-      return res.status(200).json({
-        demo: true,
-        key: "rzp_test_demo",
-        order: {
-          id: `demo_order_${Date.now()}`,
-          amount: selectedPlan.amount,
-          currency: "INR",
-        },
-        plan: selectedPlan,
+      return res.status(400).json({
+        message: "Invalid plan",
       })
     }
 
+    let finalAmount = selectedPlan.amount
+    let couponApplied = false
+
+    let coupon = null
+    if (couponCode) {
+      const now = new Date()
+      coupon = await Coupon.findOne({
+        code: couponCode.toUpperCase(),
+        active: true,
+        $or: [{ expiresAt: { $exists: false } }, { expiresAt: null }, { expiresAt: { $gte: now } }],
+      })
+
+      if (coupon && coupon.usedCount < coupon.usageLimit) {
+        if (coupon.discountType === "dynamic") {
+          const discountPercent = Math.min(Math.max(Number(coupon.discountAmount) || 0, 0), 100)
+          finalAmount = Math.round(selectedPlan.amount * (100 - discountPercent) / 100)
+        } else {
+          finalAmount -= coupon.discountAmount
+        }
+        couponApplied = true
+      }
+    }
+
+    finalAmount = Math.max(finalAmount, 1)
+
     const order = await razorpay.orders.create({
-      amount: selectedPlan.amount,
+      amount: finalAmount * 100,
       currency: "INR",
-      receipt: `credits_${req.userId}_${Date.now()}`,
+      receipt: `receipt_${Date.now()}`,
     })
 
-    return res.status(200).json({ key: process.env.RAZORPAY_KEY_ID, order, plan: selectedPlan })
+    await Payment.create({
+      user: req.userId,
+      amount: finalAmount,
+      credits: selectedPlan.credits,
+      plan,
+      razorpayOrderId: order.id,
+      status: "pending",
+      couponCode: couponApplied ? couponCode?.toUpperCase() : "",
+      discountAmount: couponApplied ? selectedPlan.amount - finalAmount : 0,
+    })
+
+    res.status(200).json({
+      success: true,
+      order: {
+        id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        status: order.status,
+      },
+      key: process.env.RAZORPAY_KEY_ID,
+      couponApplied,
+      finalAmount,
+      plan: {
+        id: plan,
+        credits: selectedPlan.credits,
+        amount: selectedPlan.amount,
+      },
+    })
   } catch (error) {
-    return res.status(500).json({ message: `Payment order error ${error.message}` })
+    res.status(500).json({
+      message: error.message,
+    })
+  }
+}
+
+export const validateCoupon = async (req, res) => {
+  try {
+    const { plan, couponCode } = req.body
+
+    const selectedPlan = plans[plan]
+    if (!selectedPlan) {
+      return res.status(400).json({ message: 'Invalid plan' })
+    }
+
+    if (!couponCode || !couponCode.trim()) {
+      return res.status(400).json({ message: 'Enter a promo code to validate.' })
+    }
+
+    const now = new Date()
+    const coupon = await Coupon.findOne({
+      code: couponCode.toUpperCase(),
+      active: true,
+      $or: [{ expiresAt: { $exists: false } }, { expiresAt: null }, { expiresAt: { $gte: now } }],
+    })
+
+    if (!coupon || coupon.usedCount >= coupon.usageLimit) {
+      return res.status(400).json({ message: 'Promo code is invalid or expired.' })
+    }
+
+    let finalAmount = selectedPlan.amount
+    let discountAmount = 0
+
+    if (coupon.discountType === 'dynamic') {
+      const discountPercent = Math.min(Math.max(Number(coupon.discountAmount) || 0, 0), 100)
+      finalAmount = Math.round(selectedPlan.amount * (100 - discountPercent) / 100)
+      discountAmount = selectedPlan.amount - finalAmount
+    } else {
+      discountAmount = Number(coupon.discountAmount) || 0
+      finalAmount = selectedPlan.amount - discountAmount
+    }
+
+    finalAmount = Math.max(finalAmount, 1)
+
+    return res.status(200).json({
+      valid: true,
+      originalAmount: selectedPlan.amount,
+      finalAmount,
+      discountAmount,
+      coupon: {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        discountAmount: coupon.discountAmount,
+      },
+      message: coupon.discountType === 'dynamic'
+        ? `${coupon.discountAmount}% off applied` 
+        : `₹${discountAmount} off applied`,
+    })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
   }
 }
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { orderId, paymentId, signature, plan = "starter", demo } = req.body
-    const selectedPlan = creditPlans[plan]
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      plan,
+      couponCode,
+    } = req.body
 
+    const body =
+      razorpay_order_id + "|" + razorpay_payment_id
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest("hex")
+
+    const isAuthentic =
+      expectedSignature === razorpay_signature
+
+    if (!isAuthentic) {
+      await Payment.findOneAndUpdate(
+        { razorpayOrderId: razorpay_order_id },
+        { status: "failed", failureReason: "Signature mismatch" }
+      )
+      return res.status(400).json({
+        message: "Payment verification failed",
+      })
+    }
+
+    const selectedPlan = plans[plan]
     if (!selectedPlan) {
-      return res.status(400).json({ message: "Invalid credit plan" })
+      return res.status(400).json({ message: "Invalid plan" })
     }
 
-    if (!demo) {
-      const generatedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-        .update(`${orderId}|${paymentId}`)
-        .digest("hex")
+    const user = await User.findById(req.userId)
+    const existingPayment = await Payment.findOne({ razorpayOrderId: razorpay_order_id })
 
-      if (generatedSignature !== signature) {
-        return res.status(400).json({ message: "Payment verification failed" })
-      }
-    }
+    user.credits += selectedPlan.credits
 
-    const user = await User.findByIdAndUpdate(
-      req.userId,
-      { $inc: { credits: selectedPlan.credits } },
-      { new: true }
+    await user.save()
+    const payment = await Payment.findOneAndUpdate(
+      { razorpayOrderId: razorpay_order_id },
+      {
+        user: req.userId,
+        amount: existingPayment?.amount || selectedPlan.amount,
+        credits: selectedPlan.credits,
+        plan,
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature,
+        status: "success",
+      },
+      { new: true, upsert: true }
     )
 
-    return res.status(200).json({ message: "Credits added successfully", credits: user.credits })
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: couponCode.toUpperCase() },
+        { $inc: { usedCount: 1 }, $push: { usedBy: { user: req.userId, payment: payment._id } } }
+      )
+    }
+
+    res.status(200).json({
+      success: true,
+      credits: user.credits,
+      message: "Payment successful",
+    })
   } catch (error) {
-    return res.status(500).json({ message: `Payment verification error ${error.message}` })
+    res.status(500).json({
+      message: error.message,
+    })
   }
 }

@@ -1,13 +1,19 @@
+import fetch from "node-fetch"
+import dotenv from "dotenv"
+
+dotenv.config()
+
 const OPENAI_API_URL = "https://api.openai.com/v1/responses"
-const DEFAULT_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini"
+const DEFAULT_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini"
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"
 const GEMINI_API_URL =
   process.env.GEMINI_API_URL ||
   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
 
-const AI_PROVIDER = (process.env.AI_PROVIDER || "openai").toLowerCase()
+const ENV_AI_PROVIDER = (process.env.AI_PROVIDER || "openai").toLowerCase()
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+const INTERVIEW_QUESTION_COUNT = 5
 
 const skillMap = {
   frontend: ["React", "state management", "component design", "performance", "accessibility"],
@@ -19,7 +25,7 @@ const skillMap = {
 
 const clampText = (text = "", max = 12000) => text.toString().slice(0, max)
 
-const localProvider = { provider: "local", model: "rules-fallback" }
+const localProvider = { provider: "fallback", model: "rules-fallback" }
 
 const getJsonOutput = (response) => {
   if (response.output_text) return response.output_text
@@ -102,6 +108,8 @@ const callOpenAiJson = async ({ instructions, input, schemaName, schema }) => {
   }
 
   const payload = await response.json()
+  console.log("OPENAI RESPONSE")
+  console.log(payload)
   const jsonText = getJsonOutput(payload)
   if (!jsonText) {
     throw new Error("OpenAI response did not include JSON text")
@@ -125,7 +133,7 @@ const callGeminiJson = async ({ instructions, input, schemaName, schema }) => {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 2000,
+        maxOutputTokens: 6000,
         responseMimeType: "application/json",
       },
     }),
@@ -137,6 +145,8 @@ const callGeminiJson = async ({ instructions, input, schemaName, schema }) => {
   }
 
   const payload = await response.json()
+  console.log("GEMINI RESPONSE")
+  console.log(payload)
   const jsonText = getJsonOutput(payload)
   if (!jsonText) {
     throw new Error("Gemini response did not include JSON text")
@@ -145,36 +155,66 @@ const callGeminiJson = async ({ instructions, input, schemaName, schema }) => {
   return parseJsonText(jsonText)
 }
 
-const callAiJson = async (args) => {
-  const providers = [AI_PROVIDER]
-  if (AI_PROVIDER === "openai" && GEMINI_API_KEY) providers.push("gemini")
-  if (AI_PROVIDER === "gemini" && OPENAI_API_KEY) providers.push("openai")
+const normalizeProvider = (provider) => {
+  const normalized = String(provider || "").toLowerCase()
+  return ["openai", "gemini", "fallback"].includes(normalized) ? normalized : ENV_AI_PROVIDER
+}
+
+const callAiJson = async (args, preferredProvider) => {
+  const aiProvider = normalizeProvider(preferredProvider)
+  console.log("AI_PROVIDER:", aiProvider)
+
+  if (aiProvider === "fallback") {
+    return null
+  }
+
+  const providers = [aiProvider]
+
+  if (aiProvider === "openai" && GEMINI_API_KEY) {
+    providers.push("gemini")
+  }
+
+  if (aiProvider === "gemini" && OPENAI_API_KEY) {
+    providers.push("openai")
+  }
 
   for (const provider of providers) {
     try {
+      console.log("Trying Provider:", provider)
+
       if (provider === "openai") {
         const json = await callOpenAiJson(args)
-        if (json) return { json, provider: "openai", model: DEFAULT_MODEL }
+
+        if (json) {
+          return {
+            json,
+            provider: "openai",
+            model: DEFAULT_MODEL,
+          }
+        }
       }
 
       if (provider === "gemini") {
         const json = await callGeminiJson(args)
-        if (json) return { json, provider: "gemini", model: GEMINI_MODEL }
+
+        if (json) {
+          return {
+            json,
+            provider: "gemini",
+            model: GEMINI_MODEL,
+          }
+        }
       }
     } catch (error) {
-      const lower = String(error.message).toLowerCase()
-      const shouldTryFallback = lower.includes("insufficient_quota") || lower.includes("quota") || lower.includes("429") || lower.includes("model not found") || lower.includes("invalid") || lower.includes("not found")
-      if (provider === "openai" && GEMINI_API_KEY && shouldTryFallback) {
-        continue
-      }
-      if (provider === "gemini" && OPENAI_API_KEY && shouldTryFallback) {
-        continue
-      }
-      throw error
+      console.log("AI ERROR:", error.message)
+
+      continue
     }
   }
 
-  return null
+  throw new Error(
+    "All AI providers failed. Check API keys or model configuration."
+  )
 }
 
 function getRoleKey(role = "") {
@@ -281,7 +321,29 @@ function localInterviewQuestions({
   ]
 
   const templates = type === "hr" ? hrQuestions : type === "behavioral" ? behavioralQuestions : technicalQuestions
-  return templates.slice(0, count).map((question) => fitQuestionLength(question.replace("based on your recent work", context)))
+
+  const extraQuestions = [
+    `What is one lesson you learned from ${project} that would help you in a ${role} role?`,
+    `How would you describe your strongest contribution in ${project} to a hiring manager?`,
+    `Which ${selectedSkills[0]} decision on ${project} was the hardest and why?`,
+    `When your work on ${project} hit a roadblock, how did you keep progress moving?`,
+    `How do you balance speed and quality when working on ${project}?`,
+    `What would you do differently if you started ${project} again today?`,
+    `How do you turn feedback about ${selectedSkills[0]} work into better results?`,
+    `Describe a time you took ownership of a challenge while working on ${project}.`,
+    `What makes you excited about building products as a ${role}?`,
+    `How do you explain complex ${selectedSkills[0]} work to someone outside your team?`,
+    `What makes this ${role} role a better fit than your previous experience?`,
+    `How do you keep your work aligned to business goals in ${project}?`,
+    `Give an example of how you simplified a difficult ${selectedSkills[0]} problem.`,
+    `Why did you choose the approach you used in ${project}?`,
+    `How do you keep learning after each project or feature you ship?`,
+  ]
+
+  const allQuestions = [...templates, ...extraQuestions]
+  const selected = allQuestions.slice(0, Math.max(count, allQuestions.length))
+
+  return selected.slice(0, count).map((question) => fitQuestionLength(question.replace("based on your recent work", context)))
 }
 
 function localAnswerEvaluation(answer = "") {
@@ -315,6 +377,25 @@ function localReport(interview) {
   const answered = interview.questions.filter((item) => item.answer)
   const strengths = [...new Set(answered.flatMap((item) => item.strengths || []))].slice(0, 4)
   const improvements = [...new Set(answered.flatMap((item) => item.improvements || []))].slice(0, 4)
+  const averageVoiceConfidence = answered.length
+    ? Math.round(answered.reduce((sum, item) => sum + (item.voiceConfidence || item.confidence || 0), 0) / answered.length)
+    : 0
+  const technicalScore = answered.length
+    ? Math.round(answered.reduce((sum, item) => sum + (item.correctness || item.score || 0), 0) / answered.length)
+    : interview.overallScore || 0
+  const communicationScore = answered.length
+    ? Math.round(answered.reduce((sum, item) => sum + (item.communication || 0), 0) / answered.length)
+    : interview.overallScore || 0
+  const confidenceScore = averageVoiceConfidence || interview.overallScore || 0
+  const problemSolvingScore = Math.round((technicalScore + (interview.overallScore || 0)) / 2)
+  const overallScore = interview.overallScore || Math.round((technicalScore + communicationScore + confidenceScore + problemSolvingScore) / 4)
+  const hiringReadiness = overallScore >= 9
+    ? "Excellent"
+    : overallScore >= 7
+      ? "Interview Ready"
+      : overallScore >= 5
+        ? "Needs Improvement"
+        : "Early Stage"
 
   return {
     summary:
@@ -322,13 +403,29 @@ function localReport(interview) {
         ? `${interview.role} ${interview.type} round completed with an overall score of ${interview.overallScore}.`
         : `${answered.length} of ${interview.questions.length} questions answered so far for the ${interview.role} round.`,
     readiness: interview.overallScore >= 8 ? "ready" : interview.overallScore >= 6 ? "needs-practice" : "early-stage",
+    hiringReadiness,
+    industryReadiness: `${overallScore}/10 industry readiness for ${interview.role} interviews`,
+    overallScore,
+    technicalScore,
+    communicationScore,
+    confidenceScore,
+    problemSolvingScore,
     strengths: strengths.length ? strengths : ["Relevant examples"],
+    weaknesses: improvements.length ? improvements : ["Answers need sharper technical depth and clearer measurable outcomes"],
     improvements: improvements.length ? improvements : ["Answer every question with a clear result"],
+    recommendedTopics: [
+      `${interview.role} fundamentals`,
+      "Systematic problem solving",
+      "Project impact storytelling",
+      "Role-specific technical tradeoffs",
+    ],
     nextSteps: [
       "Rewrite weak answers in STAR format.",
       "Add one metric to every project story.",
       "Practice the highest-difficulty questions again.",
     ],
+    finalVerdict: `${hiringReadiness}: the candidate shows useful potential for ${interview.role} roles, with the next leap coming from deeper answer structure and evidence.`,
+    motivationalNote: "Keep practicing with specific examples; every sharper answer will make your interview presence stronger.",
     ...localProvider,
   }
 }
@@ -389,7 +486,6 @@ function normalizeQuestionLines(text = "") {
     .split("\n")
     .map((line) => line.replace(/^\s*(?:\d+[\).:-]|\-|\*)\s*/, "").trim())
     .filter(Boolean)
-    .slice(0, 5)
 }
 
 export async function generateInterviewQuestions({
@@ -401,8 +497,14 @@ export async function generateInterviewQuestions({
   projects = [],
   skills = [],
   resumeText = "",
+  aiProvider,
 }) {
-  const fallbackQuestions = localInterviewQuestions({ role, type, level, resumeSummary, projects, skills, resumeText, count: 5 })
+  if (normalizeProvider(aiProvider) === "fallback") {
+    return {
+      questions: localInterviewQuestions({ role, type, level, resumeSummary, projects, skills, resumeText, count: INTERVIEW_QUESTION_COUNT }),
+      ...localProvider,
+    }
+  }
 
   try {
     const result = await callAiJson({
@@ -412,7 +514,7 @@ export async function generateInterviewQuestions({
 
 Speak in simple, natural English as if you are directly talking to the candidate.
 
-Generate exactly 5 interview questions.
+Generate exactly ${INTERVIEW_QUESTION_COUNT} interview questions.
 
 Strict Rules:
 - Each question must contain between 15 and 25 words.
@@ -425,11 +527,9 @@ Strict Rules:
 - Questions must feel practical and realistic.
 
 Difficulty progression:
-Question 1 -> easy
-Question 2 -> easy
-Question 3 -> medium
-Question 4 -> medium
-Question 5 -> hard
+Questions 1 to 5 -> easy
+Questions 6 to 10 -> medium
+Questions 11 to 15 -> hard
 
 Make questions based on the candidate's role, experience,interviewMode, projects, skills, and resume details.`,
       input: `Role:${role}
@@ -445,24 +545,36 @@ Resume:${clampText(resumeText || resumeSummary, 3500)}`,
         properties: {
           questions: {
             type: "array",
-            minItems: 5,
-            maxItems: 5,
+            minItems: INTERVIEW_QUESTION_COUNT,
+            maxItems: INTERVIEW_QUESTION_COUNT,
             items: { type: "string" },
           },
         },
       },
-    })
+    }, aiProvider)
 
-    if (!result) return { questions: fallbackQuestions, ...localProvider }
+    if (!result) {
+      throw new Error("No AI provider is configured. Add an OpenAI or Gemini API key before generating interview questions.")
+    }
+
     const questions = result.json.questions?.length ? result.json.questions : normalizeQuestionLines(result.json)
-    return { questions: questions.slice(0, 5), provider: result.provider, model: result.model }
+
+    if (questions.length < INTERVIEW_QUESTION_COUNT) {
+      throw new Error(`AI returned ${questions.length} questions, but ${INTERVIEW_QUESTION_COUNT} are required.`)
+    }
+
+    return { questions: questions.slice(0, INTERVIEW_QUESTION_COUNT), provider: result.provider, model: result.model }
   } catch (error) {
-    return { questions: fallbackQuestions, ...localProvider, aiError: error.message }
+    throw new Error(`AI question generation failed: ${error.message}`)
   }
 }
 
-export async function evaluateAnswer({ question = "", answer = "", role = "", type = "", level = "", resumeSummary = "" }) {
+export async function evaluateAnswer({ question = "", answer = "", role = "", type = "", level = "", resumeSummary = "", aiProvider }) {
   const fallback = localAnswerEvaluation(answer)
+
+  if (normalizeProvider(aiProvider) === "fallback") {
+    return fallback
+  }
 
   try {
     const result = await callAiJson({
@@ -525,7 +637,7 @@ Resume: ${clampText(resumeSummary, 2500)}`,
           feedback: { type: "string" },
         },
       },
-    })
+    }, aiProvider)
 
     if (!result) return fallback
     return {
@@ -547,49 +659,219 @@ Resume: ${clampText(resumeSummary, 2500)}`,
   }
 }
 
-export async function generateInterviewReport(interview) {
+export async function generateInterviewReport(interview, aiProvider) {
   const fallback = localReport(interview)
+  if (normalizeProvider(aiProvider) === "fallback") {
+    return fallback
+  }
+
+  const answered = interview.questions.filter((item) => item.answer)
+  const voiceConfidence = answered.length
+    ? Math.round(answered.reduce((sum, item) => sum + (item.voiceConfidence || item.confidence || 0), 0) / answered.length)
+    : 0
+  const questionsText = interview.questions
+    .map((item, index) => {
+      return `Q${index + 1}: ${item.question}
+Answer: ${item.answer || "No spoken or written answer saved."}
+Score: ${item.score || 0}/10
+Technical correctness: ${item.correctness || 0}/10
+Communication: ${item.communication || 0}/10
+Confidence: ${item.confidence || 0}/10
+Voice confidence: ${item.voiceConfidence || 0}/10
+Feedback: ${item.feedback || "No individual feedback saved."}`
+    })
+    .join("\n\n")
 
   try {
     const result = await callAiJson({
       schemaName: "interview_report",
       instructions:
-        "You create concise interview performance reports for candidates. Focus on readiness, repeatable strengths, gaps, and next practice steps.",
-      input: JSON.stringify({
-        role: interview.role,
-        type: interview.type,
-        level: interview.level,
-        resumeSummary: interview.resumeSummary,
-        overallScore: interview.overallScore,
-        questions: interview.questions.map((item) => ({
-          question: item.question,
-          answer: item.answer,
-          score: item.score,
-          confidence: item.confidence,
-          communication: item.communication,
-          correctness: item.correctness,
-          voiceConfidence: item.voiceConfidence,
-          feedback: item.feedback,
-          strengths: item.strengths,
-          improvements: item.improvements,
-        })),
-      }),
+        `You are an advanced AI Interview Analyzer and Career Evaluation Expert.
+
+Your job is to generate a highly professional, modern, realistic, and personalized interview performance report based on the candidate's interview answers, resume data, voice confidence, and technical communication.
+
+The report should feel like it was generated by a real senior technical interviewer from a top product-based company.
+
+REPORT REQUIREMENTS
+
+Generate a modern AI-powered report with:
+
+1. Overall interview summary
+2. Hiring readiness level
+3. Technical performance analysis
+4. Communication analysis
+5. Confidence analysis
+6. Strengths
+7. Weaknesses
+8. Recommended improvements
+9. Personalized next steps
+10. Recommended technologies/topics to study
+11. Interviewer final verdict
+12. Industry readiness score
+13. Realistic feedback
+14. Motivational ending note
+
+IMPORTANT RULES
+
+- Feedback must be specific and realistic.
+- Avoid generic sentences.
+- Analyze answers deeply.
+- Mention actual strengths from answers.
+- Mention actual missing areas.
+- Give practical improvements.
+- Sound professional and modern.
+- Use concise but meaningful language.
+- Even if only few answers exist, still generate a useful report.
+- Do not mention "not enough answers".
+- Report should feel premium and production-level.
+- Tone should be professional, encouraging, and realistic.
+
+SCORING RULES
+
+Generate realistic scores between 1-10 for:
+
+- technicalScore
+- communicationScore
+- confidenceScore
+- problemSolvingScore
+- overallScore
+
+Hiring readiness levels:
+
+9-10 -> Excellent
+7-8 -> Interview Ready
+5-6 -> Needs Improvement
+Below 5 -> Early Stage
+
+RETURN STRICT JSON only. Do not add markdown, commentary, or extra text.`,
+      input: `Role: ${interview.role}
+
+Interview Type: ${interview.type}
+
+Experience Level: ${interview.level}
+
+Resume Summary:
+${interview.resumeSummary || "No resume summary saved."}
+
+Interview Questions & Answers:
+${questionsText}
+
+Voice Confidence:
+${voiceConfidence}/10
+
+Overall Interview Score:
+${interview.overallScore || 0}/10`,
       schema: {
         type: "object",
         additionalProperties: false,
-        required: ["summary", "readiness", "strengths", "improvements", "nextSteps"],
+
+        required: [
+          "summary",
+          "overallScore",
+          "technicalScore",
+          "communicationScore",
+          "confidenceScore",
+          "problemSolvingScore",
+          "hiringReadiness",
+          "industryReadiness",
+          "strengths",
+          "weaknesses",
+          "improvements",
+          "recommendedTopics",
+          "nextSteps",
+          "finalVerdict",
+          "motivationalNote"
+        ],
+
         properties: {
-          summary: { type: "string" },
-          readiness: { type: "string", enum: ["ready", "needs-practice", "early-stage"] },
-          strengths: { type: "array", minItems: 1, maxItems: 5, items: { type: "string" } },
-          improvements: { type: "array", minItems: 1, maxItems: 5, items: { type: "string" } },
-          nextSteps: { type: "array", minItems: 1, maxItems: 5, items: { type: "string" } },
-        },
+          summary: {
+            type: "string"
+          },
+
+          overallScore: {
+            type: "integer"
+          },
+
+          technicalScore: {
+            type: "integer"
+          },
+
+          communicationScore: {
+            type: "integer"
+          },
+
+          confidenceScore: {
+            type: "integer"
+          },
+
+          problemSolvingScore: {
+            type: "integer"
+          },
+
+          hiringReadiness: {
+            type: "string"
+          },
+
+          industryReadiness: {
+            type: "string"
+          },
+
+          strengths: {
+            type: "array",
+            items: {
+              type: "string"
+            }
+          },
+
+          weaknesses: {
+            type: "array",
+            items: {
+              type: "string"
+            }
+          },
+
+          improvements: {
+            type: "array",
+            items: {
+              type: "string"
+            }
+          },
+
+          recommendedTopics: {
+            type: "array",
+            items: {
+              type: "string"
+            }
+          },
+
+          nextSteps: {
+            type: "array",
+            items: {
+              type: "string"
+            }
+          },
+
+          finalVerdict: {
+            type: "string"
+          },
+
+          motivationalNote: {
+            type: "string"
+          }
+        }
       },
-    })
+    }, aiProvider)
 
     if (!result) return fallback
-    return { ...fallback, ...result.json, provider: result.provider, model: result.model }
+    const report = {
+      ...fallback,
+      ...result.json,
+      readiness: result.json.overallScore >= 8 ? "ready" : result.json.overallScore >= 6 ? "needs-practice" : "early-stage",
+      provider: result.provider,
+      model: result.model,
+    }
+
+    return report
   } catch (error) {
     return { ...fallback, aiError: error.message }
   }

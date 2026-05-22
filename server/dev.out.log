@@ -7,63 +7,1072 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: js,mjs,cjs,json[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ suppress logs { quiet: true }
-Connecting to MongoDB...
-MongoDB connected successfully: InterviewIQ
-Server is running on port 8000
-[32m[nodemon] resta[32m[nodemon] restarting due[32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (11) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ suppress logs { quiet: true }
+◇ injected env (11) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
-[32m[nodemon[32m[nodemon] starting `node in◇ injected ◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: true }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
-Connecting tMongoDB connected successfully: InterviewIQ
-Server is running on port 8000
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
 [32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected ◇ injected env (10) from .env // tip: ⌁ auth for agents [www.vestauth.com]
-ConnectingMongoDB connectMongoDB connected successfully: InterviewIQ
-Server is runnin[32m[nodemon] restarting due to changes...[39m
-[32m[nodemon] [32m[nodemon] starting `node ◇ injected env (10) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (11) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (0) from .env // tip: ⌘ override existing { override: true }
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
-[32m[nodemon] st[32m[nodemon] starting `nod◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: true }
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ suppress logs { quiet: true }
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
-Server is running on port 8000
-[32m[nodemon] restarting due to[32m[nodemon] re[32m[nodemon] starting `node in[32m[nodemon◇ injected env (10) from .env ◇ injected env (10) from .env // tip: ⌘ custom filepath { path: '/MongoDB connected successfully: InterviewIQ
 Server is running on port 8000
 [32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ◈ e◇ injected env (10) from .env // tip: ⌘ suppress logsMongoDB connected successfully: InterviewIQ
-Server is running on port 8000
-[32m[nodemon] restarting due to changes..[32m[n[32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
 Connecting to MongoDB...
 MongoDB connected successfully: InterviewIQ
-SeMongoDB connected successfull[32m[nodemon] restarting due to changes...[39m
+Server is running on port 8000
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 1458,
+    candidatesTokenCount: 272,
+    totalTokenCount: 2371,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 641,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'SF4Paq29FqOnjuMP2sv22Qw'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 1712,
+    candidatesTokenCount: 330,
+    totalTokenCount: 3640,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 1598,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'U14PaqHXBYPijuMPqo3cuAw'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 602,
+    candidatesTokenCount: 59,
+    totalTokenCount: 1650,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 989,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'jF4ParfUEYCD4-EPo9Dr4Q0'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 590,
+    candidatesTokenCount: 61,
+    totalTokenCount: 1285,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 634,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'ul4Pav-qHsL-juMP7OL0-Qk'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 744,
+    candidatesTokenCount: 65,
+    totalTokenCount: 1744,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 935,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: '9V4PauSJCO3cqfkPyaz5yAw'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 478,
+    candidatesTokenCount: 61,
+    totalTokenCount: 865,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 326,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'CV8Pau2JEKiE4-EP7bf7sAU'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 534,
+    candidatesTokenCount: 59,
+    totalTokenCount: 1442,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 849,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'LF8PaoalEbaKqfkPiPeeuQw'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 1170,
+    candidatesTokenCount: 59,
+    totalTokenCount: 1887,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 658,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'Y18Pas6uLZWrjuMP3sCqmAw'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 865,
+    candidatesTokenCount: 64,
+    totalTokenCount: 1836,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 907,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'i18Par7mGfmCg8UP_6y-qQo'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 635,
+    candidatesTokenCount: 60,
+    totalTokenCount: 1497,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 802,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'yWAPate9Lu6s4-EP54v7UA'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 652,
+    candidatesTokenCount: 58,
+    totalTokenCount: 1667,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 957,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: '9WAPatGBKdTBjuMPoM20gQk'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+GEMINI RESPONSE
+{
+  candidates: [ { content: [Object], finishReason: 'STOP', index: 0 } ],
+  usageMetadata: {
+    promptTokenCount: 570,
+    candidatesTokenCount: 64,
+    totalTokenCount: 1570,
+    promptTokensDetails: [ [Object] ],
+    thoughtsTokenCount: 936,
+    serviceTier: 'standard'
+  },
+  modelVersion: 'gemini-2.5-flash',
+  responseId: 'HWEPaoq3GZSF4-EPvNbVgQk'
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 43.146915987s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "43s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 6.931129854s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "6s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 32.500339866s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "32s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 54.916305823s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.5-flash",
+              "location": "global"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "54s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 24.510138864s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "24s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 35.666690762s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "35s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 33.496169356s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "33s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+[32m[nodemon] restarting due to changes...[39m
 [32m[nodemon] starting `node index.js`[39m
-◇ injected env (10) from .env // tip: ⌘ mu◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: tMongoDB connected successfully:MongoDB connected successfully: InterviewIQ
-[32m[nodemon] restarting due t[32m[nodemon] res[32m[nodemon] starting `node i[32m[nodemon]◇ injected env (10) from .env◇ injected env (10) from .env // tip: ⌁ auth for agents [www.vestauMongoDB connected successfully: IMongoDB connected successfully: InterviewIQ
+◇ injected env (11) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 50.535084399s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.5-flash",
+              "location": "global"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "50s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 34.962750063s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "34s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 11.520959775s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "11s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 1.437036666s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.5-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "1s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 14.64399745s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.5-flash",
+              "location": "global"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "14s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+AI_PROVIDER: gemini
+Trying Provider: gemini
+AI ERROR: Gemini API error 429: {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 2.757350333s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.5-flash",
+              "location": "global"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "2s"
+      }
+    ]
+  }
+}
+
+Trying Provider: openai
+AI ERROR: OpenAI API error 429: {
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+    "type": "insufficient_quota",
+    "param": null,
+    "code": "insufficient_quota"
+  }
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (0) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (11) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+◇ injected env (0) from .env // tip: ⌘ override existing { override: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ enable debugging { debug: true }
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
+Server is running on port 8000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (13) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+Connecting to MongoDB...
+MongoDB connected successfully: InterviewIQ
 Server is running on port 8000

@@ -1,0 +1,20 @@
+services:
+  - type: web_service
+    name: interviewiq-server
+    env: node
+    plan: starter
+    branch: main
+    root: server
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+
+static_sites:
+  - type: static_site
+    name: interviewiq-client
+    branch: main
+    root: Client
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    plan: starter
+    autoDeploy: true

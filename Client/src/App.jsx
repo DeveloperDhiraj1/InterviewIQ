@@ -6,6 +6,7 @@ import Interview from './pages/Interview'
 import History from './pages/History'
 import Pricing from './pages/Pricing'
 import Admin from './pages/Admin'
+import About from './pages/About'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path='/interview' element={<Interview />} />
       <Route path='/history' element={<History />} />
       <Route path='/pricing' element={<Pricing />} />
+      <Route path='/about' element={<About />} />
       <Route path='/admin' element={<Admin />} />
     </Routes>
   )

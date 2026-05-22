@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
+  lastLoginAt: Date,
+  lastLoginIp: String,
   resetPasswordToken: {
     type: String,
     select: false,
