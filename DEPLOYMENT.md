@@ -25,8 +25,8 @@ This repository contains a Vite React frontend in `Client/` and an Express backe
    - `PORT` (Render sets this automatically; optional)
    - `MONGODB_URI`
    - `JWT_SECRET`
-   - `CLIENT_URL=https://your-vercel-frontend-url`
-   - `FRONTEND_URL=https://your-vercel-frontend-url`
+   - `CLIENT_URL=https://your-frontend-domain`
+   - `FRONTEND_URL=https://your-frontend-domain`
    - `OPENAI_API_KEY` or `GEMINI_API_KEY`
    - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_SECURE`, `EMAIL_FROM`
 

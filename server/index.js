@@ -14,15 +14,32 @@ const app = express();
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1)
 }
+const normalizeOrigin = (origin) => {
+  if (!origin) return origin
+  try {
+    return new URL(origin).origin
+  } catch {
+    if (!origin.startsWith('http')) {
+      return `https://${origin}`
+    }
+    return origin
+  }
+}
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  "https://interviewiqai.me",
+  "https://www.interviewiqai.me",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:3000",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
   "http://127.0.0.1:3000",
-].filter(Boolean)
+]
+  .map(normalizeOrigin)
+  .filter(Boolean)
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true
