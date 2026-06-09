@@ -2,38 +2,17 @@
 # This file helps search engines understand which pages to crawl and index
 
 User-agent: *
+
 Allow: /
-Allow: /about
-Allow: /pricing
-Allow: /interview
-Allow: /history
+
+Disallow: /history
+
 Disallow: /admin
+
 Disallow: /auth
-Disallow: /*.json$
-Disallow: /*?*sort=
-Disallow: /*?*filter=
+
 Disallow: /api/
+
 Disallow: /.git
 
-# Specific rules for Google
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-# Specific rules for Bing
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-# Block bad bots
-User-agent: AhrefsBot
-Disallow: /
-
-User-agent: SemrushBot
-Disallow: /
-
-User-agent: DotBot
-Disallow: /
-
-# Sitemap location
 Sitemap: https://interviewiqai.me/sitemap.xml
