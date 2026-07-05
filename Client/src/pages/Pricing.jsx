@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BadgeCheck, CreditCard, FileText, ShieldCheck, Tag, WalletCards } from 'lucide-react'
 import {
   FiArrowLeft,
   FiCheck,
@@ -8,7 +9,6 @@ import {
 } from 'react-icons/fi'
 
 import api from '../utils/api'
-import creditAsset from '../assets/credit.png'
 
 const plans = [
   {
@@ -194,48 +194,66 @@ function Pricing() {
   }
 
   return (
-    <main className='app-shell px-4 py-8'>
+    <main className='app-shell px-4 py-8 sm:px-6'>
       <div className='mx-auto max-w-7xl'>
         <Link
           to='/'
-          className='inline-flex items-center gap-2'
+          className='btn-ghost inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold'
         >
           <FiArrowLeft />
           Dashboard
         </Link>
 
-        <section className='hero-panel mt-6 rounded-3xl p-8 text-white'>
-          <div className='grid gap-6 md:grid-cols-2'>
+        <section className='hero-panel mt-6 overflow-hidden rounded-3xl text-white'>
+          <div className='noise-grid grid gap-6 p-8 md:grid-cols-2'>
             <div>
-              <p className='text-emerald-300 font-semibold'>
+              <p className='text-sm font-semibold text-emerald-300'>
                 InterviewIQ Premium
               </p>
 
-              <h1 className='mt-3 text-5xl font-bold leading-tight'>
+              <h1 className='mt-3 text-5xl font-semibold leading-tight'>
                 Buy Interview Credits
               </h1>
 
-              <p className='mt-4 text-slate-300'>
+              <p className='mt-4 max-w-xl text-emerald-100/72'>
                 Practice unlimited AI interviews
                 with voice analysis and smart
                 reports.
               </p>
+
+              <div className='mt-6 flex flex-wrap gap-3'>
+                {[
+                  ['Secure checkout', ShieldCheck],
+                  ['Fast activation', BadgeCheck],
+                  ['Resume-linked', FileText],
+                ].map(([label, Icon]) => (
+                  <span key={label} className='inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-emerald-100/75'>
+                    {React.createElement(Icon, { size: 14, className: 'text-emerald-300' })}
+                    {label}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <img
-              src={creditAsset}
-              alt=''
-              className='rounded-2xl'
-            />
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='icon-tile rounded-3xl p-6'>
+                <WalletCards size={44} className='text-emerald-300' />
+                <p className='mt-4 text-sm uppercase tracking-[0.24em] text-emerald-100/55'>Flexible plans</p>
+              </div>
+              <div className='rounded-3xl border border-white/10 bg-white/5 p-6'>
+                <CreditCard size={44} className='text-emerald-300' />
+                <p className='mt-4 text-sm text-emerald-100/65'>Simple pricing for sustained practice and report generation.</p>
+              </div>
+            </div>
           </div>
         </section>
 
         <div className='mt-6 max-w-md'>
-          <label className='text-sm font-semibold'>
+          <label className='text-sm font-semibold text-emerald-100/80'>
             Promo Code
           </label>
 
-          <div className='mt-2 flex items-center gap-2 rounded-xl border bg-white p-3'>
+          <div className='mt-2 flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-white/5 p-3'>
             <FiTag />
 
             <input
@@ -245,13 +263,13 @@ function Pricing() {
                 setCouponCode(e.target.value)
               }
               placeholder='Enter coupon code'
-              className='w-full outline-none'
+              className='w-full bg-transparent outline-none placeholder:text-emerald-100/35'
             />
             <button
               type='button'
               onClick={applyCoupon}
               disabled={couponLoading}
-              className='rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-60'
+              className='rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-all duration-200 hover:bg-emerald-400 disabled:opacity-60'
             >
               {couponLoading ? 'Checking...' : 'Apply'}
             </button>
@@ -259,7 +277,7 @@ function Pricing() {
         </div>
 
         {message && (
-          <div className='mt-5 rounded-xl bg-emerald-50 p-4 text-emerald-700'>
+          <div className='mt-5 rounded-xl border border-emerald-400/15 bg-emerald-500/10 p-4 text-emerald-50'>
             {message}
           </div>
         )}
@@ -268,26 +286,26 @@ function Pricing() {
           {plans.map((plan, index) => (
             <div
               key={plan.id}
-              className={`rounded-3xl bg-white p-6 shadow-xl ${
+              className={`premium-card rounded-3xl p-6 transition-all duration-200 hover:-translate-y-0.5 ${
                 index === 1
-                  ? 'border-4 border-emerald-400'
+                  ? 'border-emerald-400/35 shadow-md'
                   : ''
               }`}
             >
               {index === 1 && (
-                <div className='mb-4 inline-block rounded-full bg-emerald-100 px-4 py-1 text-xs font-semibold text-emerald-700'>
+                <div className='mb-4 inline-block rounded-full border border-emerald-400/15 bg-emerald-500/10 px-4 py-1 text-xs font-semibold text-emerald-100'>
                   Most Popular
                 </div>
               )}
 
-              <h2 className='text-3xl font-bold'>
+              <h2 className='text-3xl font-semibold text-white'>
                 {plan.name}
               </h2>
 
-              <p className='mt-3 text-5xl font-bold'>
+              <p className='mt-3 text-5xl font-semibold'>
                 {couponApplied && couponPreview[plan.id] ? (
                   <>
-                    <span className='mr-2 line-through text-base font-normal text-slate-400'>₹{plan.price}</span>
+                    <span className='mr-2 text-base font-normal text-emerald-100/45 line-through'>₹{plan.price}</span>
                     ₹{couponPreview[plan.id].finalAmount}
                   </>
                 ) : (
@@ -295,19 +313,19 @@ function Pricing() {
                 )}
               </p>
 
-              <p className='mt-2 text-slate-500'>
+              <p className='mt-2 text-emerald-100/60'>
                 {plan.credits} Credits
               </p>
 
-              <div className='mt-6 flex gap-2 text-sm text-slate-600'>
-                <FiCheck className='mt-1 text-emerald-500' />
+              <div className='mt-6 flex gap-2 text-sm text-emerald-100/72'>
+                <FiCheck className='mt-1 text-emerald-400' />
                 {plan.bestFor}
               </div>
 
               <button
                 onClick={() => buyPlan(plan.id)}
                 disabled={loadingPlan === plan.id}
-                className='mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-4 font-semibold text-white hover:bg-emerald-600'
+                className='mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-4 font-semibold text-slate-950 transition-all duration-200 hover:bg-emerald-400 disabled:opacity-60'
               >
                 <FiCreditCard />
 

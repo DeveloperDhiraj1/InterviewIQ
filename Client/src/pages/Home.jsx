@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { motion as Motion } from 'framer-motion'
+import { BarChart3, Bot, CheckCircle2, Circle, FileText, Gauge, Mic, ShieldCheck, Sparkles, Target } from 'lucide-react'
 import {
   FiAward,
   FiBarChart2,
@@ -19,11 +20,6 @@ import {
 } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import jsPDF from 'jspdf/dist/jspdf.es.min.js'
-import aiAnswerAsset from '../assets/ai-ans.png'
-import confidenceAsset from '../assets/confi.png'
-import historyAsset from '../assets/history.png'
-import resumeAsset from '../assets/resume.png'
-import techAsset from '../assets/tech.png'
 import api from '../utils/api'
 
 const questionBank = {
@@ -119,7 +115,11 @@ function Home() {
   const currentQuestion = questions[questionIndex]
   const averageScore = Math.round(history.reduce((sum, item) => sum + item.score, 0) / history.length)
   const credits = currentUser?.credits ?? 0
-  const focusTips = useMemo(() => (averageScore >= 80 ? ['Mock interview daily', 'Sharpen metrics', 'Practice concise endings'] : ['Use STAR format', 'Add project numbers', 'Review weak answers']), [averageScore])
+  const focusChecklist = useMemo(() => [
+    { label: 'Mock interview daily', done: averageScore >= 80 },
+    { label: 'Sharpen metrics', done: averageScore >= 74 },
+    { label: 'Practice concise endings', done: averageScore >= 86 },
+  ], [averageScore])
 
   useEffect(() => {
     api
@@ -173,43 +173,43 @@ function Home() {
   }
 
   return (
-    <main className='app-shell text-[#111827]'>
-      <header className='sticky top-0 z-30 border-b border-white/60 bg-white/75 backdrop-blur-xl relative'>
+    <main className='app-shell text-emerald-50'>
+      <header className='sticky top-0 z-30 border-b border-emerald-400/10 bg-[#071311]/90 backdrop-blur-xl relative'>
         <div className='mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6'>
           <Link to='/' className='flex items-center gap-3'>
-            <span className='btn-dark grid h-10 w-10 place-items-center rounded-lg'>
+            <span className='btn-dark grid h-10 w-10 place-items-center rounded-xl'>
               <FiMic size={20} />
             </span>
             <div>
               <p className='text-base font-semibold'>InterviewIQ</p>
-              <p className='text-xs text-slate-500'>Premium AI interview SaaS</p>
+              <p className='text-xs text-emerald-100/60'>Premium AI interview SaaS</p>
             </div>
           </Link>
 
           <div className='flex items-center gap-2'>
-            <button onClick={() => setMenuOpen((open) => !open)} className='inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm md:hidden'>
+            <button onClick={() => setMenuOpen((open) => !open)} className='inline-flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-400/15 bg-[#081716] text-emerald-100 shadow-sm md:hidden'>
               {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
             </button>
 
-            <nav className={`absolute inset-x-4 top-full mt-2 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl md:static md:mt-0 md:flex md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none ${menuOpen ? 'block' : 'hidden'} md:block`}>
+            <nav className={`absolute inset-x-4 top-full mt-2 rounded-2xl border border-emerald-400/15 bg-[#071311]/98 p-4 shadow-2xl backdrop-blur-xl md:static md:mt-0 md:flex md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none ${menuOpen ? 'block' : 'hidden'} md:block`}>
               <div className='flex flex-col gap-3 md:flex-row md:items-center md:gap-2'>
-                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/interview'>Interview</Link>
-                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/about'>About</Link>
-                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/history'>Reports</Link>
-                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/pricing'>Pricing</Link>
-                {currentUser?.isAdmin && <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100' to='/admin'>Admin</Link>}
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/interview'>Interview</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/about'>About</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/history'>Reports</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/pricing'>Pricing</Link>
+                {currentUser?.isAdmin && <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/admin'>Admin</Link>}
               </div>
             </nav>
 
-            <span className='chip hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold sm:inline-flex'>
+            <span className='chip hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold sm:inline-flex'>
               <FiAward /> {credits} credits
             </span>
             {currentUser ? (
-              <button onClick={logout} className='btn-dark inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold'>
+              <button onClick={logout} className='btn-dark inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold'>
                 <FiLogOut /> Logout
               </button>
             ) : (
-              <Link to='/auth' className='btn-dark inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold'>
+              <Link to='/auth' className='btn-dark inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold'>
                 <FiUser /> Sign in
               </Link>
             )}
@@ -217,59 +217,107 @@ function Home() {
         </div>
       </header>
 
-      <section className='mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1.08fr_0.92fr]'>
-        <Motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className='hero-panel overflow-hidden rounded-2xl text-white'>
-          <div className='grid min-h-[380px] gap-6 p-6 md:grid-cols-[1fr_280px] md:p-8'>
-            <div className='flex flex-col justify-between'>
-              <div>
-                <p className='inline-flex rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-semibold text-emerald-200'>Production-ready interview prep</p>
-                <h1 className='mt-6 max-w-2xl text-4xl font-semibold leading-tight md:text-5xl'>Practice smarter before the real interview.</h1>
-                <p className='mt-4 max-w-xl text-sm leading-6 text-slate-300 md:text-base'>
-                  Upload a resume, generate role-specific rounds, get feedback, and track your readiness with credits and reports.
+      <section className='mx-auto max-w-7xl px-4 py-6 sm:px-6'>
+        <Motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className='hero-panel overflow-hidden rounded-[2rem] text-white'>
+          <div className='noise-grid grid gap-6 p-6 lg:grid-cols-[1.1fr_0.9fr] lg:p-8'>
+            <div className='flex flex-col justify-between gap-8 lg:min-h-[420px]'>
+              <div className='max-w-2xl'>
+                <p className='inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-100'>Production-ready interview prep</p>
+                <h1 className='mt-6 text-4xl font-semibold tracking-tight md:text-6xl'>Practice like a serious candidate, not a demo user.</h1>
+                <p className='mt-4 max-w-xl text-sm leading-7 text-emerald-100/72 md:text-base'>
+                  Upload a resume, generate role-specific rounds, get feedback, and track your readiness with a cleaner, more focused workflow.
                 </p>
+
+                <div className='mt-6 flex flex-wrap gap-2'>
+                  {['Resume intelligence', 'Role-specific questions', 'Voice scoring', 'Saved reports'].map((item) => (
+                    <span key={item} className='rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-emerald-100/70'>
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className='mt-8 flex flex-col gap-3 sm:flex-row'>
-                <Link to='/interview' className='btn-primary inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
+
+              <div className='flex flex-col gap-3 sm:flex-row'>
+                <Link to='/interview' className='btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold'>
                   <FiPlay /> Start interview
                 </Link>
-                <Link to='/history' className='inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-5 py-3 text-sm font-semibold text-white'>
+                <Link to='/history' className='inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:border-emerald-400/30 hover:bg-white/5'>
                   <FiBarChart2 /> View reports
                 </Link>
               </div>
             </div>
-            <div className='grid content-end gap-3'>
-              <img src={techAsset} alt='' className='h-36 w-full rounded-xl border border-white/10 object-cover shadow-2xl' />
-              <div className='rounded-xl bg-white/10 p-4 backdrop-blur'>
-                <p className='text-sm text-slate-300'>Readiness score</p>
-                <div className='mt-2 flex items-end gap-3'>
-                  <span className='text-5xl font-semibold'>{averageScore}</span>
-                  <span className='pb-2 text-sm text-emerald-200'>avg</span>
+
+            <div className='grid gap-4 lg:justify-self-end'>
+              <div className='rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur'>
+                <div className='flex items-center justify-between gap-4'>
+                  <div>
+                    <p className='text-xs uppercase tracking-[0.24em] text-emerald-100/45'>Control center</p>
+                    <p className='mt-2 text-xl font-semibold'>Live readiness</p>
+                  </div>
+                  <span className='icon-tile h-12 w-12 rounded-2xl text-emerald-300'><Mic size={20} /></span>
+                </div>
+
+                <div className='mt-6 grid gap-4 sm:grid-cols-[1fr_0.95fr]'>
+                  <div className='rounded-[1.4rem] border border-emerald-400/12 bg-black/15 p-5'>
+                    <div className='flex items-end justify-between gap-4'>
+                      <div>
+                        <p className='text-xs uppercase tracking-[0.22em] text-emerald-100/45'>Readiness score</p>
+                        <p className='mt-2 text-5xl font-semibold leading-none'>{averageScore}</p>
+                      </div>
+                      <Gauge size={28} className='text-emerald-300' />
+                    </div>
+                    <p className='mt-4 text-sm leading-6 text-emerald-100/62'>Your current average is steady. Keep the scoring loop tight and the answers concise.</p>
+                  </div>
+
+                  <div className='grid gap-3'>
+                    {[
+                      ['Sessions', history.length, BarChart3],
+                      ['Credits', credits, ShieldCheck],
+                    ].map(([label, value, IconComponent]) => (
+                      <div key={label} className='rounded-[1.2rem] border border-white/10 bg-white/5 p-4'>
+                        <div className='flex items-center justify-between gap-3'>
+                          <div>
+                            <p className='text-xs uppercase tracking-[0.2em] text-emerald-100/45'>{label}</p>
+                            <p className='mt-2 text-2xl font-semibold'>{value}</p>
+                          </div>
+                          {React.createElement(IconComponent, { size: 18, className: 'text-emerald-300' })}
+                        </div>
+                      </div>
+                    ))}
+                    <div className='rounded-[1.2rem] border border-emerald-400/12 bg-emerald-500/10 p-4'>
+                      <p className='text-xs uppercase tracking-[0.22em] text-emerald-100/45'>Next action</p>
+                      <p className='mt-2 text-sm leading-6 text-emerald-50'>Launch one technical round, then export the report before moving on.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Motion.div>
 
-        <div className='grid gap-4 sm:grid-cols-3 lg:grid-cols-1'>
+        <div className='mt-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-3'>
           {[
-            [confidenceAsset, 'Confidence', averageScore >= 80 ? 'Strong' : 'Building', 'bg-white'],
-            [historyAsset, 'Sessions', history.length, 'bg-white'],
-            [resumeAsset, 'Resume lab', resumeReport ? `${resumeReport.score} ATS` : 'Ready', 'bg-white'],
-          ].map(([image, label, value]) => (
-            <div key={label} className={`premium-card flex items-center gap-4 rounded-2xl p-4`}>
-              <img src={image} alt='' className='h-16 w-16 rounded-xl object-cover' />
+            [Sparkles, 'Confidence', averageScore >= 80 ? 'Strong' : 'Building', 'Always sharp'],
+            [BarChart3, 'Sessions', history.length, 'Review history'],
+            [FileText, 'Resume lab', resumeReport ? `${resumeReport.score} ATS` : 'Ready', 'No stock art'],
+          ].map(([Icon, label, value, hint]) => (
+            <div key={label} className='premium-card flex items-center gap-4 rounded-[1.5rem] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400/25'>
+              <span className='icon-tile h-14 w-14 rounded-2xl text-emerald-300'>
+                {React.createElement(Icon, { size: 22 })}
+              </span>
               <div>
-                <p className='text-sm text-slate-500'>{label}</p>
+                <p className='text-sm text-emerald-100/60'>{label}</p>
                 <p className='text-2xl font-semibold'>{value}</p>
+                <p className='text-xs text-emerald-100/45'>{hint}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className='mx-auto grid max-w-7xl gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[260px_1fr]'>
+      <section className='mx-auto grid max-w-7xl gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[270px_1fr]'>
         <aside className='space-y-4'>
-          <div className='premium-card rounded-2xl p-3'>
+          <div className='premium-card rounded-[1.5rem] p-3'>
             {[
               ['interview', FiMic, 'Practice'],
               ['resume', FiFileText, 'Resume'],
@@ -278,8 +326,8 @@ function Home() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`mb-1 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold last:mb-0 ${
-                  activeTab === tab ? 'btn-dark' : 'text-slate-600 hover:bg-white/80'
+                className={`mb-1 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-all duration-200 last:mb-0 ${
+                  activeTab === tab ? 'btn-dark' : 'text-emerald-100/72 hover:bg-white/5'
                 }`}
               >
                 {React.createElement(Icon)} {label}
@@ -287,12 +335,13 @@ function Home() {
             ))}
           </div>
 
-          <div className='premium-card rounded-2xl p-5'>
-            <p className='text-sm font-semibold'>Focus this week</p>
+          <div className='premium-card rounded-[1.5rem] p-5'>
+            <p className='text-sm font-semibold text-white'>Focus this week</p>
             <div className='mt-4 grid gap-3'>
-              {focusTips.map((tip) => (
-                <div key={tip} className='flex items-center gap-2 text-sm text-slate-600'>
-                  <FiCheckCircle className='text-emerald-500' /> {tip}
+              {focusChecklist.map((item) => (
+                <div key={item.label} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-all duration-200 ${item.done ? 'bg-emerald-500/10 text-emerald-100' : 'text-emerald-100/45'}`}>
+                  {item.done ? <CheckCircle2 size={16} className='text-emerald-400' /> : <Circle size={16} className='text-emerald-100/35' />}
+                  <span className={item.done ? 'font-medium' : ''}>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -301,10 +350,10 @@ function Home() {
 
         {activeTab === 'interview' && (
           <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='grid gap-6 xl:grid-cols-[1fr_320px]'>
-            <div className='premium-card rounded-2xl p-5'>
+            <div className='premium-card rounded-[1.5rem] p-5'>
               <div className='flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between'>
                 <div>
-                  <p className='text-sm font-semibold text-emerald-600'>Quick practice</p>
+                  <p className='text-sm font-semibold text-emerald-300'>Quick practice</p>
                   <h2 className='mt-1 text-2xl font-semibold'>Interview room</h2>
                 </div>
                 <button
@@ -313,20 +362,20 @@ function Home() {
                     setAnswer('')
                     setFeedback(null)
                   }}
-                  className='inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold hover:bg-slate-50'
+                  className='inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/15 px-4 py-2 text-sm font-semibold text-emerald-100/80 transition-all duration-200 hover:bg-white/5'
                 >
                   <FiRefreshCw /> New question
                 </button>
               </div>
 
               <div className='mt-5 grid gap-4 sm:grid-cols-2'>
-                <label className='grid gap-2 text-sm font-semibold text-slate-700'>
+                <label className='grid gap-2 text-sm font-semibold text-emerald-100/80'>
                   Target role
-                  <input value={role} onChange={(event) => setRole(event.target.value)} className='soft-input rounded-lg px-3 py-3' />
+                  <input value={role} onChange={(event) => setRole(event.target.value)} className='soft-input rounded-xl px-3 py-3' />
                 </label>
-                <label className='grid gap-2 text-sm font-semibold text-slate-700'>
+                <label className='grid gap-2 text-sm font-semibold text-emerald-100/80'>
                   Interview type
-                  <select value={interviewType} onChange={(event) => { setInterviewType(event.target.value); setQuestionIndex(0); setFeedback(null) }} className='soft-input rounded-lg px-3 py-3'>
+                  <select value={interviewType} onChange={(event) => { setInterviewType(event.target.value); setQuestionIndex(0); setFeedback(null) }} className='soft-input rounded-xl px-3 py-3'>
                     <option value='technical'>Technical</option>
                     <option value='behavioral'>Behavioral</option>
                     <option value='hr'>HR</option>
@@ -335,32 +384,34 @@ function Home() {
               </div>
 
               <div className='hero-panel mt-5 rounded-2xl p-5 text-white'>
-                <p className='text-sm text-slate-400'>Question {questionIndex + 1} of {questions.length}</p>
+                <p className='text-sm text-emerald-100/55'>Question {questionIndex + 1} of {questions.length}</p>
                 <p className='mt-3 text-xl font-semibold leading-relaxed'>{currentQuestion}</p>
               </div>
 
-              <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder='Type your spoken answer here...' className='soft-input mt-5 min-h-48 w-full resize-y rounded-xl p-4 leading-relaxed' />
-              <button onClick={submitAnswer} className='btn-primary mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
+              <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder='Type your spoken answer here...' className='soft-input mt-5 min-h-48 w-full resize-y rounded-xl p-4 leading-relaxed placeholder:text-emerald-100/35' />
+              <button onClick={submitAnswer} className='btn-primary mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold'>
                 <FiPlay /> Analyze answer
               </button>
             </div>
 
-            <aside className='premium-card rounded-2xl p-5'>
+            <aside className='premium-card rounded-[1.5rem] p-5'>
               <div className='flex items-center gap-3'>
-                <img src={aiAnswerAsset} alt='' className='h-14 w-14 rounded-xl object-cover' />
+                <span className='icon-tile h-14 w-14 rounded-2xl text-emerald-300'>
+                  <Bot size={22} />
+                </span>
                 <div>
-                  <p className='font-semibold'>AI coach</p>
-                  <p className='text-sm text-slate-500'>Instant scoring</p>
+                  <p className='font-semibold text-white'>AI coach</p>
+                  <p className='text-sm text-emerald-100/55'>Instant scoring</p>
                 </div>
               </div>
               {feedback ? (
                 <div className='mt-6 space-y-4'>
                   <p className='text-6xl font-semibold'>{feedback.score}</p>
-                  <p className='rounded-xl bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-800'>{feedback.note}</p>
-                  {feedback.improvements.map((item) => <p key={item} className='rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700'>{item}</p>)}
+                  <p className='rounded-xl border border-emerald-400/10 bg-emerald-500/10 p-4 text-sm leading-relaxed text-emerald-50'>{feedback.note}</p>
+                  {feedback.improvements.map((item) => <p key={item} className='rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-sm text-emerald-100/75'>{item}</p>)}
                 </div>
               ) : (
-                <p className='premium-card-muted mt-6 rounded-xl p-4 text-sm leading-relaxed text-slate-600'>Submit an answer to receive scoring and coaching.</p>
+                <p className='premium-card-muted mt-6 rounded-xl p-4 text-sm leading-relaxed text-emerald-100/65'>Submit an answer to receive scoring and coaching.</p>
               )}
             </aside>
           </Motion.section>
@@ -368,10 +419,10 @@ function Home() {
 
         {activeTab === 'resume' && (
           <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='grid gap-6 xl:grid-cols-[1fr_320px]'>
-            <div className='premium-card rounded-2xl p-5'>
-              <h2 className='text-2xl font-semibold'>Resume analyzer</h2>
-              <p className='mt-2 text-sm text-slate-500'>Paste your resume text and get quick ATS-style feedback.</p>
-              <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Paste resume content, project bullets, or job-targeted summary...' className='soft-input mt-5 min-h-80 w-full resize-y rounded-xl p-4 leading-relaxed' />
+            <div className='premium-card rounded-[1.5rem] p-5'>
+              <h2 className='text-2xl font-semibold text-white'>Resume analyzer</h2>
+              <p className='mt-2 text-sm text-emerald-100/60'>Paste your resume text and get quick ATS-style feedback.</p>
+              <textarea value={resumeText} onChange={(event) => setResumeText(event.target.value)} placeholder='Paste resume content, project bullets, or job-targeted summary...' className='soft-input mt-5 min-h-80 w-full resize-y rounded-xl p-4 leading-relaxed placeholder:text-emerald-100/35' />
               <button
                 onClick={() => {
                   if (!resumeText || !resumeText.trim()) {
@@ -382,35 +433,35 @@ function Home() {
                   setResumeReport(analyzeResume(resumeText))
                   setResumeMessage('')
                 }}
-                className='btn-dark mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'
+                className='btn-dark mt-4 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold'
               >
                 <FiTarget /> Analyze resume
               </button>
-              {resumeMessage && <p className='mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900'>{resumeMessage}</p>}
+              {resumeMessage && <p className='mt-3 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-100'>{resumeMessage}</p>}
             </div>
-            <aside className='premium-card rounded-2xl p-5'>
-              <p className='font-semibold'>Resume report</p>
+            <aside className='premium-card rounded-[1.5rem] p-5'>
+              <p className='font-semibold text-white'>Resume report</p>
               {resumeReport ? (
                 <div className='mt-5 space-y-4'>
                   <p className='text-6xl font-semibold'>{resumeReport.score}</p>
-                  <div className='flex flex-wrap gap-2'>{(resumeReport.matchedSkills.length ? resumeReport.matchedSkills : ['Add keywords']).map((skill) => <span key={skill} className='rounded-lg bg-slate-100 px-3 py-2 text-sm'>{skill}</span>)}</div>
-                  {resumeReport.suggestions.map((suggestion) => <p key={suggestion} className='rounded-xl bg-amber-50 p-3 text-sm leading-relaxed text-amber-900'>{suggestion}</p>)}
+                  <div className='flex flex-wrap gap-2'>{(resumeReport.matchedSkills.length ? resumeReport.matchedSkills : ['Add keywords']).map((skill) => <span key={skill} className='rounded-full border border-emerald-400/15 bg-white/5 px-3 py-2 text-sm text-emerald-100/75'>{skill}</span>)}</div>
+                  {resumeReport.suggestions.map((suggestion) => <p key={suggestion} className='rounded-xl border border-amber-400/15 bg-amber-400/10 p-3 text-sm leading-relaxed text-amber-100'>{suggestion}</p>)}
                 </div>
               ) : (
-                <p className='premium-card-muted mt-5 rounded-xl p-4 text-sm text-slate-600'>Your report will appear here.</p>
+                <p className='premium-card-muted mt-5 rounded-xl p-4 text-sm text-emerald-100/65'>Your report will appear here.</p>
               )}
             </aside>
           </Motion.section>
         )}
 
         {activeTab === 'analytics' && (
-          <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='premium-card rounded-2xl p-5'>
-            <div className='flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between'>
+          <Motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className='premium-card rounded-[1.5rem] p-5'>
+            <div className='flex flex-col gap-4 border-b border-white/10 pb-5 md:flex-row md:items-center md:justify-between'>
               <div>
-                <p className='text-sm font-semibold text-emerald-600'>Performance</p>
+                <p className='text-sm font-semibold text-emerald-300'>Performance</p>
                 <h2 className='text-2xl font-semibold'>Progress dashboard</h2>
               </div>
-              <button onClick={exportReport} className='btn-dark inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold'>
+              <button onClick={exportReport} className='btn-dark inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold'>
                 <FiDownload /> Export report
               </button>
             </div>
@@ -418,17 +469,17 @@ function Home() {
               {[[FiTrendingUp, 'Average score', averageScore], [FiBookOpen, 'Sessions', history.length], [FiAward, 'Credits left', credits]].map(([Icon, label, value]) => (
                 <div key={label} className='premium-card-muted rounded-xl p-4'>
                   {React.createElement(Icon, { className: 'text-emerald-500' })}
-                  <p className='mt-4 text-sm text-slate-500'>{label}</p>
+                  <p className='mt-4 text-sm text-emerald-100/60'>{label}</p>
                   <p className='text-3xl font-semibold'>{value}</p>
                 </div>
               ))}
             </div>
-            <div className='mt-6 overflow-hidden rounded-xl border border-slate-200'>
+            <div className='mt-6 overflow-hidden rounded-xl border border-white/10'>
               {history.map((item) => (
-                <div key={`${item.role}-${item.type}-${item.date}`} className='grid gap-2 border-b border-slate-200 p-4 last:border-b-0 md:grid-cols-[1fr_130px_90px_70px] md:items-center'>
+                <div key={`${item.role}-${item.type}-${item.date}`} className='grid gap-2 border-b border-white/10 p-4 last:border-b-0 md:grid-cols-[1fr_130px_90px_70px] md:items-center'>
                   <p className='font-semibold'>{item.role}</p>
-                  <p className='text-sm text-slate-500'>{item.type}</p>
-                  <p className='text-sm text-slate-500'>{item.date}</p>
+                  <p className='text-sm text-emerald-100/60'>{item.type}</p>
+                  <p className='text-sm text-emerald-100/60'>{item.date}</p>
                   <p className='font-semibold'>{item.score}</p>
                 </div>
               ))}
