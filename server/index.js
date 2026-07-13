@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
 import connectDb from './config/connectDb.js';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.rout.js';
@@ -7,7 +7,6 @@ import resumeRouter from './routes/resume.route.js';
 import interviewRouter from './routes/interview.route.js';
 import paymentRouter from './routes/payment.routes.js';
 import adminRouter from './routes/admin.route.js';
-dotenv.config();
 import cors from "cors";
 
 const app = express();

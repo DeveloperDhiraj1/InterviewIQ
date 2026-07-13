@@ -316,21 +316,30 @@ export const getAdminAnnouncements = async (req, res) => {
 
 export const createAdminAnnouncement = async (req, res) => {
   try {
+    console.log(`[Announcement] Announcement request received:`, req.body.title);
+
     const announcement = await Announcement.create({ title: req.body.title, message: req.body.message, sentBy: req.userId, active: req.body.active ?? true })
     await logAdminAction(req, "announcement.create", "Announcement", announcement._id.toString(), req.body)
 
+    console.log(`[Announcement] Announcement saved successfully with ID: ${announcement._id}`);
+
+    let emailResult = { successCount: 0, failedCount: 0 };
     try {
       const adminUser = await User.findById(req.userId).select('name email').lean()
-      await sendAnnouncementEmails({
+      emailResult = await sendAnnouncementEmails({
         title: announcement.title,
         message: announcement.message,
         senderName: adminUser?.name || 'InterviewIQ Team',
       })
     } catch (emailError) {
-      console.error('Failed to send announcement emails:', emailError)
+      console.error('[Announcement] Failed to process announcement emails:', emailError)
     }
 
-    return res.status(201).json({ announcement })
+    return res.status(201).json({ 
+      announcement, 
+      emailsSent: emailResult.successCount, 
+      emailsFailed: emailResult.failedCount 
+    })
   } catch (error) {
     return res.status(500).json({ message: `Create announcement error ${error.message}` })
   }
