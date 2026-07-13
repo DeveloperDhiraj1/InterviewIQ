@@ -10,6 +10,8 @@ import About from './pages/About'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import SiteFooter from './components/SiteFooter'
+import GDLobby from './pages/GDLobby'
+import GDRoom from './pages/GDRoom'
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path='/privacy' element={<Privacy />} />
         <Route path='/terms' element={<Terms />} />
         <Route path='/admin' element={<Admin />} />
+        <Route path='/gd/lobby' element={<GDLobby />} />
+        <Route path='/gd/room/:id' element={<GDRoom />} />
       </Routes>
       <SiteFooter />
     </div>

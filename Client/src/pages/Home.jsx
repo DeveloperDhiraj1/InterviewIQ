@@ -194,6 +194,7 @@ function Home() {
             <nav className={`absolute inset-x-4 top-full mt-2 rounded-2xl border border-emerald-400/15 bg-[#071311]/98 p-4 shadow-2xl backdrop-blur-xl md:static md:mt-0 md:flex md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none ${menuOpen ? 'block' : 'hidden'} md:block`}>
               <div className='flex flex-col gap-3 md:flex-row md:items-center md:gap-2'>
                 <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/interview'>Interview</Link>
+                <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/gd/lobby'>Group Discussion</Link>
                 <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/about'>About</Link>
                 <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/history'>Reports</Link>
                 <Link onClick={() => setMenuOpen(false)} className='rounded-lg px-3 py-2 text-sm font-medium text-emerald-100/70 transition-all duration-200 hover:bg-white/5 hover:text-emerald-200' to='/pricing'>Pricing</Link>

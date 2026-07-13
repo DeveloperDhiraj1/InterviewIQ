@@ -8,6 +8,11 @@ import interviewRouter from './routes/interview.route.js';
 import paymentRouter from './routes/payment.routes.js';
 import adminRouter from './routes/admin.route.js';
 import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+import gdRoomRouter from "./routes/gdRoom.route.js";
+import gdAiRouter from "./routes/gdAi.route.js";
+import { initializeGdSockets } from "./sockets/gdSocketHandler.js";
 
 const app = express();
 if (process.env.NODE_ENV === "production") {
@@ -72,8 +77,14 @@ app.use("/api/resume", resumeRouter)
 app.use("/api/interviews", interviewRouter)
 app.use("/api/payments", paymentRouter)
 app.use("/api/admin", adminRouter)
+app.use("/api/gd/rooms", gdRoomRouter)
+app.use("/api/gd/ai", gdAiRouter)
 
 const PORT = process.env.PORT || 6000;
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: corsOptions });
+initializeGdSockets(io);
 
 const startServer = async () => {
   const connected = await connectDb();
@@ -82,7 +93,7 @@ const startServer = async () => {
     process.exit(1);
   }
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 };
