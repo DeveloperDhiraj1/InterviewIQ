@@ -1,0 +1,25 @@
+{
+  "name": "InterviewIQ AI",
+  "short_name": "InterviewIQ",
+  "description": "AI-powered mock interviews, resume analysis, and interview feedback.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071311",
+  "theme_color": "#071311",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
