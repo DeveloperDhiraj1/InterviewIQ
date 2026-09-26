@@ -388,7 +388,7 @@ function Interview() {
           <div className='noise-grid grid gap-6 p-6 md:grid-cols-[1fr_220px] md:p-8'>
             <div>
               <p className='text-sm font-semibold text-emerald-300'>AI interview agent</p>
-              <h1 className='mt-2 max-w-3xl text-4xl font-semibold leading-tight'>Generate a role-specific round from your resume.</h1>
+              <h1 className='mt-2 max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl'>Generate a role-specific round from your resume.</h1>
               <p className='mt-3 max-w-2xl text-sm leading-6 text-emerald-100/72'>
                 Upload your resume PDF and AI will analyze it to generate 15 interview questions automatically.
               </p>

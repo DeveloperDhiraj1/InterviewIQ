@@ -224,7 +224,7 @@ function Home() {
             <div className='flex flex-col justify-between gap-8 lg:min-h-[420px]'>
               <div className='max-w-2xl'>
                 <p className='inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-100'>Production-ready interview prep</p>
-                <h1 className='mt-6 text-4xl font-semibold tracking-tight md:text-6xl'>Practice like a serious candidate, not a demo user.</h1>
+                <h1 className='mt-6 text-3xl font-semibold tracking-tight sm:text-4xl md:text-6xl'>Practice like a serious candidate, not a demo user.</h1>
                 <p className='mt-4 max-w-xl text-sm leading-7 text-emerald-100/72 md:text-base'>
                   Upload a resume, generate role-specific rounds, get feedback, and track your readiness with a cleaner, more focused workflow.
                 </p>

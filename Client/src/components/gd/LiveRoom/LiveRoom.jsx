@@ -194,21 +194,21 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     <div className="h-screen bg-slate-950 flex flex-col font-sans overflow-hidden">
 
       {/* ── Top Header ─────────────────────────────────────────────────────── */}
-      <header className="h-16 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between px-6 shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="min-h-16 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between gap-3 px-3 py-2 sm:px-6 shrink-0">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Live</span>
           </div>
           <div className="h-4 w-px bg-slate-700" />
-          <h1 className="text-sm font-bold text-slate-100">Room: {roomId}</h1>
+          <h1 className="truncate text-xs font-bold text-slate-100 sm:text-sm">Room: {roomId}</h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {/* Copy Link — in the header for easy access */}
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            className="flex min-h-9 items-center gap-1.5 rounded-lg bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 sm:px-3"
           >
             {copySuccess ? (
               <><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Copied!</>
@@ -233,7 +233,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
       <div className="flex-1 flex overflow-hidden">
 
         {/* Video Grid */}
-        <div className={`flex-1 p-4 transition-all duration-300 overflow-hidden ${showChat ? 'mr-[320px]' : ''}`}>
+        <div className={`min-w-0 flex-1 overflow-hidden p-2 transition-all duration-300 sm:p-4 ${showChat ? 'md:mr-[320px]' : ''}`}>
           <div
             className="grid gap-4 h-full"
             style={{
@@ -263,7 +263,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
         {/* ── Transcript Sidebar ────────────────────────────────────────────── */}
         <div
-          className={`absolute right-0 top-16 bottom-20 w-[320px] bg-slate-900 border-l border-slate-800 flex flex-col transition-transform duration-300 ${
+            className={`absolute right-0 top-16 bottom-20 z-20 flex w-full max-w-[320px] flex-col border-l border-slate-800 bg-slate-900 transition-transform duration-300 ${
             showChat ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -297,8 +297,8 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
       </div>
 
       {/* ── Bottom Control Bar ─────────────────────────────────────────────── */}
-      <footer className="h-20 bg-slate-900 border-t border-slate-800 flex items-center justify-center px-6 shrink-0 relative z-10">
-        <div className="flex items-center gap-3">
+      <footer className="min-h-20 bg-slate-900 border-t border-slate-800 flex items-center justify-center px-3 py-3 sm:px-6 shrink-0 relative z-10">
+        <div className="flex max-w-full items-center gap-2 sm:gap-3">
 
           {/* Mic */}
           <button
@@ -352,14 +352,14 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
             <MessageSquare className="w-5 h-5" />
           </button>
 
-          <div className="w-px h-8 bg-slate-700 mx-1" />
+          <div className="mx-0.5 h-8 w-px bg-slate-700 sm:mx-1" />
 
           {/* Leave */}
           <button
             onClick={handleLeave}
-            className="px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(220,38,38,0.4)]"
+            className="flex h-12 items-center gap-2 rounded-full bg-red-600 px-4 py-2.5 font-semibold text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all hover:bg-red-500 sm:px-6"
           >
-            <PhoneOff className="w-5 h-5" /> Leave
+            <PhoneOff className="h-5 w-5" /><span className="hidden sm:inline">Leave</span>
           </button>
         </div>
       </footer>
