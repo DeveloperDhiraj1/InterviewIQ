@@ -12,6 +12,7 @@ import Terms from './pages/Terms'
 import SiteFooter from './components/SiteFooter'
 import GDLobby from './pages/GDLobby'
 import GDRoom from './pages/GDRoom'
+import InstallPrompt from './components/InstallPrompt'
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path='/gd/lobby' element={<GDLobby />} />
         <Route path='/gd/room/:id' element={<GDRoom />} />
       </Routes>
+      <InstallPrompt />
       <SiteFooter />
     </div>
   )
