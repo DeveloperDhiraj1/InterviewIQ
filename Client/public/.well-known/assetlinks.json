@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "me.interviewiq.twa",
+      "sha256_cert_fingerprints": [
+        "49:C8:39:08:12:D8:34:09:47:79:02:27:C5:88:83:FB:A8:D3:41:58:FF:B8:89:43:C8:AC:C3:EF:02:81:51:DB"
+      ]
+    }
+  }
+]
