@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
@@ -14,30 +14,39 @@ import GDLobby from './pages/GDLobby'
 import GDRoom from './pages/GDRoom'
 import InstallPrompt from './components/InstallPrompt'
 import MobileBottomNav from './components/MobileBottomNav'
+import AppLaunchScreen from './components/AppLaunchScreen'
 import { useLocation } from 'react-router-dom'
 
 function App() {
   const location = useLocation()
+  const [pageKey, setPageKey] = useState(location.pathname)
   const showMobileNav = ['/', '/home', '/interview', '/gd/lobby', '/history'].some((path) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
   )
 
+  useEffect(() => {
+    setPageKey(location.pathname)
+  }, [location.pathname])
+
   return (
     <div className={`flex min-h-screen flex-col ${showMobileNav ? 'mobile-app-shell' : ''}`}>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/home' element={<Home />} />
-        <Route path='/auth' element={<Auth />} />
-        <Route path='/interview' element={<Interview />} />
-        <Route path='/history' element={<History />} />
-        <Route path='/pricing' element={<Pricing />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/privacy' element={<Privacy />} />
-        <Route path='/terms' element={<Terms />} />
-        <Route path='/admin' element={<Admin />} />
-        <Route path='/gd/lobby' element={<GDLobby />} />
-        <Route path='/gd/room/:id' element={<GDRoom />} />
-      </Routes>
+      <div key={pageKey} className='page-transition flex min-h-0 flex-1 flex-col'>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/auth' element={<Auth />} />
+          <Route path='/interview' element={<Interview />} />
+          <Route path='/history' element={<History />} />
+          <Route path='/pricing' element={<Pricing />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/privacy' element={<Privacy />} />
+          <Route path='/terms' element={<Terms />} />
+          <Route path='/admin' element={<Admin />} />
+          <Route path='/gd/lobby' element={<GDLobby />} />
+          <Route path='/gd/room/:id' element={<GDRoom />} />
+        </Routes>
+      </div>
+      <AppLaunchScreen />
       <InstallPrompt />
       {showMobileNav && <MobileBottomNav />}
       <SiteFooter />
