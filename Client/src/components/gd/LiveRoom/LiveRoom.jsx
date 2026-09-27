@@ -21,7 +21,7 @@ const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf }) => {
 
   return (
     <div
-      className={`relative bg-slate-900 rounded-xl overflow-hidden border-2 transition-colors ${
+      className={`relative min-h-0 min-w-0 overflow-hidden rounded-xl border-2 bg-slate-900 transition-colors ${
         isSpeaking
           ? 'border-indigo-500 shadow-[0_0_15px_rgba(79,70,229,0.3)]'
           : 'border-slate-800'
@@ -33,7 +33,7 @@ const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf }) => {
           autoPlay
           playsInline
           muted={isSelf} // never echo local audio
-          className="w-full h-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
           style={isSelf ? { transform: 'scaleX(-1)' } : {}}
         />
       ) : (
@@ -235,10 +235,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
         {/* Video Grid */}
         <div className={`min-w-0 flex-1 overflow-hidden p-2 transition-all duration-300 sm:p-4 ${showChat ? 'md:mr-[320px]' : ''}`}>
           <div
-            className="grid gap-4 h-full"
-            style={{
-              gridTemplateColumns: `repeat(${Math.min(2, 1 + remoteParticipantEntries.length)}, 1fr)`,
-            }}
+            className="grid h-full min-h-0 grid-cols-1 auto-rows-fr gap-3 sm:grid-cols-2 sm:gap-4"
           >
             {/* Local (self) tile */}
             <VideoTile
