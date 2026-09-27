@@ -162,9 +162,26 @@
       linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 28px 28px;
   }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    padding: 0.45rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(16, 185, 129, 0.16);
+    background: rgba(4, 16, 15, 0.94);
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(18px);
+  }
 }
 
 @media (max-width: 639px) {
+  .mobile-app-shell {
+    padding-bottom: 5rem;
+  }
+
   .hero-panel {
     border-radius: 1.25rem;
   }

@@ -13,10 +13,17 @@ import SiteFooter from './components/SiteFooter'
 import GDLobby from './pages/GDLobby'
 import GDRoom from './pages/GDRoom'
 import InstallPrompt from './components/InstallPrompt'
+import MobileBottomNav from './components/MobileBottomNav'
+import { useLocation } from 'react-router-dom'
 
 function App() {
+  const location = useLocation()
+  const showMobileNav = ['/', '/home', '/interview', '/gd/lobby', '/history'].some((path) =>
+    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+  )
+
   return (
-    <div className='flex min-h-screen flex-col'>
+    <div className={`flex min-h-screen flex-col ${showMobileNav ? 'mobile-app-shell' : ''}`}>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/home' element={<Home />} />
@@ -32,6 +39,7 @@ function App() {
         <Route path='/gd/room/:id' element={<GDRoom />} />
       </Routes>
       <InstallPrompt />
+      {showMobileNav && <MobileBottomNav />}
       <SiteFooter />
     </div>
   )
