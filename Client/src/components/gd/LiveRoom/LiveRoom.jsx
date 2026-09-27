@@ -121,6 +121,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
   ]);
   const [handRaised, setHandRaised] = useState(false);
   const [raisedHands, setRaisedHands] = useState({});
+  const [roomParticipants, setRoomParticipants] = useState([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '' });
 
@@ -183,6 +184,40 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     socket.on('hand-raised', handleHandRaised);
     return () => socket.off('hand-raised', handleHandRaised);
   }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const addParticipant = (peerId) => {
+      if (!peerId || peerId === userId) return;
+      setRoomParticipants((current) => current.includes(peerId) ? current : [...current, peerId]);
+    };
+
+    const handleRoomParticipants = ({ userIds = [] }) => {
+      userIds.forEach(addParticipant);
+    };
+
+    const handleParticipantJoined = ({ userId: peerId }) => addParticipant(peerId);
+
+    const handleParticipantLeft = ({ userId: peerId }) => {
+      setRoomParticipants((current) => current.filter((id) => id !== peerId));
+      setRaisedHands((current) => {
+        const next = { ...current };
+        delete next[peerId];
+        return next;
+      });
+    };
+
+    socket.on('room-participants', handleRoomParticipants);
+    socket.on('participant-joined', handleParticipantJoined);
+    socket.on('participant-left', handleParticipantLeft);
+
+    return () => {
+      socket.off('room-participants', handleRoomParticipants);
+      socket.off('participant-joined', handleParticipantJoined);
+      socket.off('participant-left', handleParticipantLeft);
+    };
+  }, [socket, userId]);
 
   // ── Camera toggle ──────────────────────────────────────────────────────────
   const handleToggleCamera = async () => {
@@ -251,7 +286,8 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
   };
 
   // Build participant list for render
-  const remoteParticipantEntries = Object.entries(remoteStreams);
+  const remotePeerIds = [...new Set([...roomParticipants, ...Object.keys(remoteStreams)])];
+  const remoteParticipantEntries = remotePeerIds.map((peerId) => [peerId, remoteStreams[peerId]]);
   const participantCount = 1 + remoteParticipantEntries.length;
   const gridColumns = participantCount <= 1 ? 1 : participantCount <= 4 ? 2 : 3;
 
