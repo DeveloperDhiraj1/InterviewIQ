@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Mic, MicOff, Video, VideoOff,
-  PhoneOff, Hand, MessageSquare, Bot,
+  PhoneOff, Hand, MessageSquare, Bot, Send,
   Link as LinkIcon, CheckCircle, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -103,6 +103,16 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     if (typeof window === 'undefined') return true;
     return window.matchMedia('(min-width: 640px)').matches;
   });
+  const [chatDraft, setChatDraft] = useState('');
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 'moderator-welcome',
+      userId: 'moderator',
+      name: 'AI Moderator',
+      message: 'Welcome everyone. The discussion is now live. Please introduce yourselves and begin.',
+      isModerator: true,
+    },
+  ]);
   const [handRaised, setHandRaised] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '' });
@@ -129,6 +139,20 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
       socket.emit('leave-room', { roomId, userId });
     };
   }, [socket, isConnected, roomId, userId]);
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleChatMessage = (message) => {
+      setChatMessages((current) => {
+        if (current.some((item) => item.id === message.id)) return current;
+        return [...current, { ...message, isSelf: message.userId === userId }];
+      });
+    };
+
+    socket.on('chat-message', handleChatMessage);
+    return () => socket.off('chat-message', handleChatMessage);
+  }, [socket, userId]);
 
   // ── Cleanup all media on unmount ───────────────────────────────────────────
   useEffect(() => {
@@ -182,6 +206,15 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
       showToast('Could not copy link. Please copy manually from your address bar.');
     }
   }, [roomId]);
+
+  const handleSendChat = (event) => {
+    event.preventDefault();
+    const message = chatDraft.trim();
+    if (!socket || !isConnected || !message) return;
+
+    socket.emit('chat-message', { roomId, userId, name: 'You', message });
+    setChatDraft('');
+  };
 
   // ── Leave ──────────────────────────────────────────────────────────────────
   const handleLeave = () => {
@@ -277,22 +310,32 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-indigo-400 flex items-center gap-1">
-                AI Moderator <Bot className="w-3 h-3" />
-              </span>
-              <p className="text-sm text-slate-300 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
-                Welcome everyone. The discussion is now live. Please introduce yourselves and begin.
-              </p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-emerald-400">You</span>
-              <p className="text-sm text-slate-300 bg-slate-800/50 p-2 rounded-lg border border-emerald-900/30">
-                Transcript will appear here as you speak.
-              </p>
-            </div>
+          <div className="flex-1 space-y-4 overflow-y-auto p-4">
+            {chatMessages.map((item) => (
+              <div key={item.id} className="flex flex-col gap-1">
+                <span className={`flex items-center gap-1 text-xs font-semibold ${item.isModerator ? 'text-indigo-400' : item.isSelf ? 'text-emerald-400' : 'text-slate-400'}`}>
+                  {item.name} {item.isModerator && <Bot className="h-3 w-3" />}
+                </span>
+                <p className={`rounded-lg border p-2 text-sm text-slate-300 ${item.isModerator ? 'border-slate-700/50 bg-slate-800/50' : item.isSelf ? 'border-emerald-900/30 bg-emerald-950/30' : 'border-slate-700/50 bg-slate-800/50'}`}>
+                  {item.message}
+                </p>
+              </div>
+            ))}
           </div>
+
+          <form onSubmit={handleSendChat} className="flex gap-2 border-t border-slate-800 p-3">
+            <input
+              value={chatDraft}
+              onChange={(event) => setChatDraft(event.target.value)}
+              placeholder={isConnected ? 'Type a message...' : 'Connecting...'}
+              disabled={!isConnected}
+              maxLength={500}
+              className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-indigo-500 disabled:opacity-50"
+            />
+            <button type="submit" disabled={!isConnected || !chatDraft.trim()} aria-label="Send message" className="rounded-lg bg-indigo-600 px-3 text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50">
+              <Send className="h-4 w-4" />
+            </button>
+          </form>
         </div>
       </div>
 

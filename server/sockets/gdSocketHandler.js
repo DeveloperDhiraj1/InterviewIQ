@@ -33,6 +33,20 @@ export const initializeGdSockets = (io) => {
     // ── WebRTC Signaling passthrough ─────────────────────────────────────────
     // We relay directly to the room — receivers filter by receiverId on the client
 
+    socket.on("chat-message", ({ roomId, userId, message, name }) => {
+      const text = String(message || "").trim().slice(0, 500);
+      const meta = socketMeta.get(socket.id);
+      if (!roomId || !text || !meta || meta.roomId !== roomId) return;
+
+      gdNamespace.to(roomId).emit("chat-message", {
+        id: `${socket.id}-${Date.now()}`,
+        userId: userId || meta.userId,
+        name: String(name || "Participant").slice(0, 40),
+        message: text,
+        sentAt: new Date().toISOString(),
+      });
+    });
+
     socket.on("webrtc-offer", ({ roomId, offer, senderId, receiverId }) => {
       if (!roomId || !offer) return;
       socket.to(roomId).emit("webrtc-offer", { offer, senderId, receiverId });
