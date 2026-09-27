@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export const initializeGdSockets = (io) => {
   const gdNamespace = io.of("/gd");
 
@@ -5,11 +7,26 @@ export const initializeGdSockets = (io) => {
   // participant-left on unexpected disconnects (network drop, browser close)
   const socketMeta = new Map(); // socketId -> { roomId, userId }
 
+  gdNamespace.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error("Authentication required"));
+
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      if (!payload?.userId) return next(new Error("Invalid authentication token"));
+      socket.userId = payload.userId;
+      return next();
+    } catch {
+      return next(new Error("Invalid authentication token"));
+    }
+  });
+
   gdNamespace.on("connection", (socket) => {
     console.log(`[Socket] Connected: ${socket.id}`);
 
     // ── Join Room ────────────────────────────────────────────────────────────
-    socket.on("join-room", ({ roomId, userId }) => {
+    socket.on("join-room", ({ roomId }) => {
+      const userId = socket.userId;
       if (!roomId || !userId) return;
 
       socket.join(roomId);
@@ -33,14 +50,14 @@ export const initializeGdSockets = (io) => {
     // ── WebRTC Signaling passthrough ─────────────────────────────────────────
     // We relay directly to the room — receivers filter by receiverId on the client
 
-    socket.on("chat-message", ({ roomId, userId, message, name }) => {
+    socket.on("chat-message", ({ roomId, message, name }) => {
       const text = String(message || "").trim().slice(0, 500);
       const meta = socketMeta.get(socket.id);
       if (!roomId || !text || !meta || meta.roomId !== roomId) return;
 
       gdNamespace.to(roomId).emit("chat-message", {
         id: `${socket.id}-${Date.now()}`,
-        userId: userId || meta.userId,
+        userId: meta.userId,
         name: String(name || "Participant").slice(0, 40),
         message: text,
         sentAt: new Date().toISOString(),

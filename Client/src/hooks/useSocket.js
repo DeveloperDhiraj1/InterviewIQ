@@ -11,6 +11,9 @@ export const useSocket = (namespace = '/gd') => {
 
   useEffect(() => {
     const sock = io(`${SOCKET_SERVER_URL}${namespace}`, {
+      auth: {
+        token: localStorage.getItem('interviewiq-token') || '',
+      },
       withCredentials: true,
       autoConnect: true,
       reconnection: true,

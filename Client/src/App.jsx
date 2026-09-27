@@ -15,6 +15,7 @@ import GDRoom from './pages/GDRoom'
 import InstallPrompt from './components/InstallPrompt'
 import MobileBottomNav from './components/MobileBottomNav'
 import AppLaunchScreen from './components/AppLaunchScreen'
+import RequireAuth from './components/RequireAuth'
 import { useLocation } from 'react-router-dom'
 
 function App() {
@@ -42,8 +43,8 @@ function App() {
           <Route path='/privacy' element={<Privacy />} />
           <Route path='/terms' element={<Terms />} />
           <Route path='/admin' element={<Admin />} />
-          <Route path='/gd/lobby' element={<GDLobby />} />
-          <Route path='/gd/room/:id' element={<GDRoom />} />
+          <Route path='/gd/lobby' element={<RequireAuth><GDLobby /></RequireAuth>} />
+          <Route path='/gd/room/:id' element={<RequireAuth><GDRoom /></RequireAuth>} />
         </Routes>
       </div>
       <AppLaunchScreen />
