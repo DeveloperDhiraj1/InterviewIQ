@@ -70,6 +70,17 @@ export const initializeGdSockets = (io) => {
       });
     });
 
+    socket.on("hand-raised", ({ roomId, raised, name }) => {
+      const meta = socketMeta.get(socket.id);
+      if (!roomId || !meta || meta.roomId !== roomId) return;
+
+      socket.to(roomId).emit("hand-raised", {
+        userId: meta.peerId || meta.userId,
+        name: String(name || "Participant").slice(0, 40),
+        raised: Boolean(raised),
+      });
+    });
+
     socket.on("webrtc-offer", ({ roomId, offer, senderId, receiverId }) => {
       if (!roomId || !offer) return;
       socket.to(roomId).emit("webrtc-offer", { offer, senderId, receiverId });

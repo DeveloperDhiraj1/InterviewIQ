@@ -10,7 +10,7 @@ import { useSocket } from '../../../hooks/useSocket';
 import { useWebRTC } from '../../../hooks/useWebRTC';
 
 // ─── Utility: render a participant's video into a <video> element ─────────────
-const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf }) => {
+const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf, handRaised }) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -49,6 +49,12 @@ const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf }) => {
         <span className="text-sm font-medium text-slate-200">{name}</span>
         {isAI && <Bot className="w-4 h-4 text-indigo-400" />}
       </div>
+
+      {handRaised && (
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1.5 text-xs font-bold text-slate-950 shadow-lg">
+          <Hand className="h-3.5 w-3.5" /> Hand raised
+        </div>
+      )}
 
       {/* Speaking animation */}
       {isSpeaking && (
@@ -114,6 +120,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     },
   ]);
   const [handRaised, setHandRaised] = useState(false);
+  const [raisedHands, setRaisedHands] = useState({});
   const [copySuccess, setCopySuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '' });
 
@@ -164,6 +171,18 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     setToast({ visible: true, message });
     setTimeout(() => setToast({ visible: false, message: '' }), duration);
   };
+
+  useEffect(() => {
+    if (!socket) return undefined;
+
+    const handleHandRaised = ({ userId: raisedUserId, name, raised }) => {
+      setRaisedHands((current) => ({ ...current, [raisedUserId]: raised }));
+      if (raised) showToast(`${name || 'A participant'} raised their hand`);
+    };
+
+    socket.on('hand-raised', handleHandRaised);
+    return () => socket.off('hand-raised', handleHandRaised);
+  }, [socket]);
 
   // ── Camera toggle ──────────────────────────────────────────────────────────
   const handleToggleCamera = async () => {
@@ -216,6 +235,14 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
     setChatDraft('');
   };
 
+  const toggleHand = () => {
+    const nextRaised = !handRaised;
+    setHandRaised(nextRaised);
+    setRaisedHands((current) => ({ ...current, [userId]: nextRaised }));
+    socket?.emit('hand-raised', { roomId, raised: nextRaised, name: 'You' });
+    showToast(nextRaised ? 'Hand raised' : 'Hand lowered');
+  };
+
   // ── Leave ──────────────────────────────────────────────────────────────────
   const handleLeave = () => {
     if (socket) socket.emit('leave-room', { roomId, userId });
@@ -225,6 +252,8 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
   // Build participant list for render
   const remoteParticipantEntries = Object.entries(remoteStreams);
+  const participantCount = 1 + remoteParticipantEntries.length;
+  const gridColumns = participantCount <= 1 ? 1 : participantCount <= 4 ? 2 : 3;
 
   return (
     <div className="h-screen bg-slate-950 flex flex-col font-sans overflow-hidden">
@@ -271,7 +300,8 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
         {/* Video Grid */}
         <div className={`min-w-0 flex-1 overflow-hidden p-2 transition-all duration-300 sm:p-4 ${showChat ? 'md:mr-[320px]' : ''}`}>
           <div
-            className="room-video-grid grid min-h-0 grid-cols-1 content-start gap-3 overflow-y-auto sm:h-full sm:grid-cols-2 sm:gap-4 sm:overflow-y-auto"
+            className="room-video-grid grid h-full min-h-0 content-start gap-3 overflow-y-auto sm:gap-4"
+            style={{ gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))` }}
           >
             {/* Local (self) tile */}
             <VideoTile
@@ -279,6 +309,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
               name="You"
               isSpeaking={!isMuted}
               isSelf={true}
+              handRaised={handRaised}
             />
 
             {/* Remote peers */}
@@ -289,6 +320,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
                 name={`Participant`}
                 isSpeaking={false}
                 isSelf={false}
+                handRaised={Boolean(raisedHands[peerId])}
               />
             ))}
           </div>
@@ -315,7 +347,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 text-xs text-slate-500">
                 <Users className="w-3.5 h-3.5" />
-                {1 + remoteParticipantEntries.length}
+                {participantCount}
               </div>
               <button type="button" onClick={() => setShowChat(false)} aria-label="Close chat" className="inline-flex items-center gap-1 rounded-lg p-1.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
                 <X className="h-4 w-4" />
@@ -385,7 +417,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
           {/* Raise Hand */}
           <button
-            onClick={() => setHandRaised((h) => !h)}
+            onClick={toggleHand}
             title="Raise / lower hand"
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
               handRaised
