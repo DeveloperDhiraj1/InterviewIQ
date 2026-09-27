@@ -21,7 +21,7 @@ const VideoTile = ({ stream, name, isSpeaking, isAI, isSelf }) => {
 
   return (
     <div
-      className={`relative min-h-0 min-w-0 overflow-hidden rounded-xl border-2 bg-slate-900 transition-colors ${
+      className={`relative min-h-0 min-w-0 aspect-video overflow-hidden rounded-xl border-2 bg-slate-900 transition-colors sm:aspect-auto ${
         isSpeaking
           ? 'border-indigo-500 shadow-[0_0_15px_rgba(79,70,229,0.3)]'
           : 'border-slate-800'
@@ -99,7 +99,10 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const [showChat, setShowChat] = useState(true);
+  const [showChat, setShowChat] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia('(min-width: 640px)').matches;
+  });
   const [handRaised, setHandRaised] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '' });
@@ -235,7 +238,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
         {/* Video Grid */}
         <div className={`min-w-0 flex-1 overflow-hidden p-2 transition-all duration-300 sm:p-4 ${showChat ? 'md:mr-[320px]' : ''}`}>
           <div
-            className="grid h-full min-h-0 grid-cols-1 auto-rows-fr gap-3 sm:grid-cols-2 sm:gap-4"
+            className="grid min-h-0 grid-cols-1 content-start gap-3 overflow-y-auto sm:h-full sm:grid-cols-2 sm:auto-rows-fr sm:gap-4 sm:overflow-hidden"
           >
             {/* Local (self) tile */}
             <VideoTile
@@ -260,7 +263,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
         {/* ── Transcript Sidebar ────────────────────────────────────────────── */}
         <div
-            className={`absolute right-0 top-16 bottom-20 z-20 flex w-full max-w-[320px] flex-col border-l border-slate-800 bg-slate-900 transition-transform duration-300 ${
+            className={`mobile-chat-panel absolute right-0 top-16 bottom-20 z-20 flex w-full max-w-[320px] flex-col border-l border-slate-800 bg-slate-900 transition-transform duration-300 ${
             showChat ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
