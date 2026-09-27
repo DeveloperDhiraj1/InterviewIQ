@@ -295,8 +295,16 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
         </div>
 
         {/* ── Transcript Sidebar ────────────────────────────────────────────── */}
+        {showChat && (
+        <button
+          type="button"
+          aria-label="Close live chat"
+          onClick={() => setShowChat(false)}
+          className="fixed inset-0 z-10 cursor-default bg-black/20 md:hidden"
+        />
+        )}
         <div
-            className={`mobile-chat-panel absolute right-0 top-16 bottom-20 z-20 flex w-full max-w-[320px] flex-col border-l border-slate-800 bg-slate-900 transition-transform duration-300 ${
+          className={`mobile-chat-panel absolute right-0 top-16 bottom-20 z-20 flex w-full max-w-[320px] flex-col border-l border-slate-800 bg-slate-900 transition-transform duration-300 ${
             showChat ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -309,8 +317,9 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
                 <Users className="w-3.5 h-3.5" />
                 {1 + remoteParticipantEntries.length}
               </div>
-              <button onClick={() => setShowChat(false)} aria-label="Close chat" className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
+              <button type="button" onClick={() => setShowChat(false)} aria-label="Close chat" className="inline-flex items-center gap-1 rounded-lg p-1.5 text-xs font-semibold text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
                 <X className="h-4 w-4" />
+                <span className="sm:hidden">Close</span>
               </button>
             </div>
           </div>
@@ -328,7 +337,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
             ))}
           </div>
 
-          <form onSubmit={handleSendChat} className="flex gap-2 border-t border-slate-800 p-3">
+          <form onSubmit={handleSendChat} className="relative z-30 flex gap-2 border-t border-slate-800 p-3">
             <input
               value={chatDraft}
               onChange={(event) => setChatDraft(event.target.value)}
@@ -389,6 +398,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
 
           {/* Chat toggle */}
           <button
+            type="button"
             onClick={() => setShowChat(!showChat)}
             title="Toggle transcript"
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
