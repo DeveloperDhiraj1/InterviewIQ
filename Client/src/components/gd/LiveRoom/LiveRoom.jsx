@@ -271,7 +271,7 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
         {/* Video Grid */}
         <div className={`min-w-0 flex-1 overflow-hidden p-2 transition-all duration-300 sm:p-4 ${showChat ? 'md:mr-[320px]' : ''}`}>
           <div
-            className="grid min-h-0 grid-cols-1 content-start gap-3 overflow-y-auto sm:h-full sm:grid-cols-2 sm:auto-rows-fr sm:gap-4 sm:overflow-hidden"
+            className="room-video-grid grid min-h-0 grid-cols-1 content-start gap-3 overflow-y-auto sm:h-full sm:grid-cols-2 sm:gap-4 sm:overflow-y-auto"
           >
             {/* Local (self) tile */}
             <VideoTile

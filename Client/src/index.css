@@ -223,6 +223,14 @@
   .page-transition {
     animation: page-enter 220ms ease-out both;
   }
+
+  .room-video-grid {
+    grid-auto-rows: minmax(0, 1fr);
+  }
+
+  .room-video-grid > * {
+    min-height: 0;
+  }
 }
 
 @keyframes app-launch-fade {
@@ -288,4 +296,5 @@
     border-radius: 1rem;
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
   }
+
 }

@@ -16,6 +16,7 @@ export const useWebRTC = (socket, roomId, userId) => {
 
   // peersRef: userId -> RTCPeerConnection
   const peersRef = useRef({});
+  const pendingIceRef = useRef({});
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -139,6 +140,7 @@ export const useWebRTC = (socket, roomId, userId) => {
     });
 
     setRemoteStreams({});
+    pendingIceRef.current = {};
   }, []);
 
   // ─── Peer Management ────────────────────────────────────────────────────────
@@ -209,13 +211,26 @@ export const useWebRTC = (socket, roomId, userId) => {
     if (!socket) return;
 
     const onParticipantJoined = ({ userId: newUserId }) => {
-      if (newUserId !== userId) handleUserJoined(newUserId);
+      if (newUserId !== userId && userId < newUserId) handleUserJoined(newUserId);
+    };
+
+    const onRoomParticipants = ({ userIds = [] }) => {
+      userIds.forEach((peerId) => {
+        if (peerId && peerId !== userId && userId < peerId) {
+          handleUserJoined(peerId);
+        }
+      });
     };
 
     const onOffer = async ({ offer, senderId, receiverId }) => {
       if (receiverId !== userId) return;
       const pc = createPeerConnection(senderId);
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const queuedCandidates = pendingIceRef.current[senderId] || [];
+      for (const candidate of queuedCandidates) {
+        await pc.addIceCandidate(candidate).catch(() => {});
+      }
+      delete pendingIceRef.current[senderId];
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       socket.emit('webrtc-answer', { roomId, answer, senderId: userId, receiverId: senderId });
@@ -238,6 +253,9 @@ export const useWebRTC = (socket, roomId, userId) => {
         } catch (e) {
           console.warn('[WebRTC] addIceCandidate error (safe to ignore):', e.message);
         }
+      } else {
+        pendingIceRef.current[senderId] = pendingIceRef.current[senderId] || [];
+        pendingIceRef.current[senderId].push(new RTCIceCandidate(candidate));
       }
     };
 
@@ -255,6 +273,7 @@ export const useWebRTC = (socket, roomId, userId) => {
 
     // Register — use named functions so we can remove them precisely
     socket.on('participant-joined', onParticipantJoined);
+    socket.on('room-participants', onRoomParticipants);
     socket.on('webrtc-offer', onOffer);
     socket.on('webrtc-answer', onAnswer);
     socket.on('webrtc-ice-candidate', onIceCandidate);
@@ -263,6 +282,7 @@ export const useWebRTC = (socket, roomId, userId) => {
     return () => {
       // Remove ONLY our listeners — avoids double-firing on hot reload
       socket.off('participant-joined', onParticipantJoined);
+      socket.off('room-participants', onRoomParticipants);
       socket.off('webrtc-offer', onOffer);
       socket.off('webrtc-answer', onAnswer);
       socket.off('webrtc-ice-candidate', onIceCandidate);

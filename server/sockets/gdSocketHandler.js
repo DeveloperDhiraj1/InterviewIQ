@@ -30,7 +30,12 @@ export const initializeGdSockets = (io) => {
       if (!roomId || !userId) return;
 
       socket.join(roomId);
+      const existingPeers = [...socketMeta.values()]
+        .filter((meta) => meta.roomId === roomId)
+        .map((meta) => meta.peerId || meta.userId);
       socketMeta.set(socket.id, { roomId, userId, peerId: peerId || userId });
+
+      socket.emit("room-participants", { userIds: existingPeers });
 
       console.log(`[Socket] ${userId} joined room ${roomId}`);
 
