@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Mic, MicOff, Video, VideoOff,
-  PhoneOff, Hand, MessageSquare, Bot, Send,
+  PhoneOff, Hand, MessageSquare, Bot, Send, X,
   Link as LinkIcon, CheckCircle, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -304,9 +304,14 @@ const LiveRoom = ({ roomId, localStream: initialStream }) => {
             <h3 className="font-bold text-slate-200 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-indigo-400" /> Live Transcript
             </h3>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Users className="w-3.5 h-3.5" />
-              {1 + remoteParticipantEntries.length}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                <Users className="w-3.5 h-3.5" />
+                {1 + remoteParticipantEntries.length}
+              </div>
+              <button onClick={() => setShowChat(false)} aria-label="Close chat" className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
+                <X className="h-4 w-4" />
+              </button>
             </div>
           </div>
 

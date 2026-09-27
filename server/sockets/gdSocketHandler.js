@@ -25,26 +25,27 @@ export const initializeGdSockets = (io) => {
     console.log(`[Socket] Connected: ${socket.id}`);
 
     // ── Join Room ────────────────────────────────────────────────────────────
-    socket.on("join-room", ({ roomId }) => {
+    socket.on("join-room", ({ roomId, userId: peerId }) => {
       const userId = socket.userId;
       if (!roomId || !userId) return;
 
       socket.join(roomId);
-      socketMeta.set(socket.id, { roomId, userId });
+      socketMeta.set(socket.id, { roomId, userId, peerId: peerId || userId });
 
       console.log(`[Socket] ${userId} joined room ${roomId}`);
 
       // Tell all OTHER members of the room that someone new arrived
-      socket.to(roomId).emit("participant-joined", { userId, socketId: socket.id });
+      socket.to(roomId).emit("participant-joined", { userId: peerId || userId, socketId: socket.id });
     });
 
     // ── Leave Room (graceful) ────────────────────────────────────────────────
     socket.on("leave-room", ({ roomId, userId }) => {
+      const meta = socketMeta.get(socket.id);
       socket.leave(roomId);
       socketMeta.delete(socket.id);
 
       console.log(`[Socket] ${userId} left room ${roomId}`);
-      socket.to(roomId).emit("participant-left", { userId, socketId: socket.id });
+      socket.to(roomId).emit("participant-left", { userId: meta?.peerId || userId, socketId: socket.id });
     });
 
     // ── WebRTC Signaling passthrough ─────────────────────────────────────────
@@ -88,7 +89,7 @@ export const initializeGdSockets = (io) => {
         const { roomId, userId } = meta;
         console.log(`[Socket] ${userId} disconnected (${reason}) from room ${roomId}`);
         // Notify remaining peers so they can close the RTCPeerConnection
-        socket.to(roomId).emit("participant-left", { userId, socketId: socket.id });
+        socket.to(roomId).emit("participant-left", { userId: meta.peerId || userId, socketId: socket.id });
         socketMeta.delete(socket.id);
       }
     });
