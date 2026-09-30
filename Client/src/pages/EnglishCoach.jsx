@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, Brain, CheckCircle2, Lightbulb, Mic, MicOff, Send, Volume2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import api from '../utils/api'
+import femaleInterviewerVideo from '../assets/female-ai.mp4'
 
 const SpeechRecognition = typeof window !== 'undefined'
   ? (window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -19,15 +20,23 @@ function EnglishCoach() {
   ])
   const [lastFeedback, setLastFeedback] = useState(null)
   const recognitionRef = useRef(null)
+  const coachVideoRef = useRef(null)
+  const [isCoachSpeaking, setIsCoachSpeaking] = useState(false)
 
   useEffect(() => () => recognitionRef.current?.stop(), [])
 
   const speak = (text) => {
     if (!('speechSynthesis' in window)) return
     window.speechSynthesis.cancel()
+    setIsCoachSpeaking(true)
+    coachVideoRef.current?.play().catch(() => {})
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'en-US'
     utterance.rate = 0.92
+    utterance.onend = () => {
+      setIsCoachSpeaking(false)
+      coachVideoRef.current?.pause()
+    }
     window.speechSynthesis.speak(utterance)
   }
 
@@ -42,16 +51,20 @@ function EnglishCoach() {
     recognition.interimResults = false
     recognition.continuous = false
     recognition.onstart = () => { setIsListening(true); setError('') }
-    recognition.onresult = (event) => setInput(event.results[0][0].transcript)
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setInput(transcript)
+      window.setTimeout(() => sendMessage(null, transcript), 0)
+    }
     recognition.onerror = () => setError('I could not hear that clearly. Please try again.')
     recognition.onend = () => setIsListening(false)
     recognitionRef.current = recognition
     recognition.start()
   }
 
-  const sendMessage = async (event) => {
+  const sendMessage = async (event, directMessage = '') => {
     event?.preventDefault()
-    const message = input.trim()
+    const message = (directMessage || input).trim()
     if (!message || isLoading) return
 
     setError('')
@@ -118,6 +131,19 @@ function EnglishCoach() {
 
         <div className='mt-6 grid gap-6 lg:grid-cols-[1fr_320px]'>
           <section className='premium-card flex min-h-[520px] flex-col rounded-2xl p-4 sm:p-5'>
+            <div className='mb-4 grid gap-4 rounded-2xl border border-emerald-400/15 bg-gradient-to-br from-emerald-500/10 to-white/[0.03] p-3 sm:grid-cols-[190px_1fr] sm:p-4'>
+              <div className={`relative aspect-video overflow-hidden rounded-xl border bg-slate-950 ${isCoachSpeaking ? 'border-emerald-300 shadow-[0_0_26px_rgba(52,211,153,0.35)]' : 'border-white/10'}`}>
+                <video ref={coachVideoRef} src={femaleInterviewerVideo} autoPlay muted playsInline loop className='h-full w-full object-cover' />
+                <div className='absolute inset-x-2 bottom-2 rounded-lg bg-black/55 px-2 py-1.5 text-xs font-semibold text-white backdrop-blur'>
+                  {isCoachSpeaking ? 'Speaking...' : 'English Coach'}
+                </div>
+              </div>
+              <div className='flex flex-col justify-center'>
+                <p className='text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300'>Your virtual tutor</p>
+                <h2 className='mt-2 text-xl font-semibold text-white'>Let’s have a real conversation.</h2>
+                <p className='mt-2 text-sm leading-6 text-emerald-100/65'>Tap the microphone, speak naturally, and I’ll listen, reply, and gently correct your English.</p>
+              </div>
+            </div>
             <div className='flex items-center justify-between border-b border-white/10 pb-4'>
               <div>
                 <p className='text-sm font-semibold text-white'>Conversation practice</p>
