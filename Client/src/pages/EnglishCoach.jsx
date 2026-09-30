@@ -23,9 +23,33 @@ function EnglishCoach() {
   const [lastFeedback, setLastFeedback] = useState(null)
   const recognitionRef = useRef(null)
   const coachVideoRef = useRef(null)
+  const coachVoiceRef = useRef(null)
   const [isCoachSpeaking, setIsCoachSpeaking] = useState(false)
 
-  useEffect(() => () => recognitionRef.current?.stop(), [])
+  const findFemaleVoice = (voices) => {
+    const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang))
+    const femaleNames = /female|samantha|zira|susan|karen|victoria|google us english|google uk english female|microsoft jenny|microsoft aria|microsoft hazel|microsoft libby|ava|emma|allison|nicole|salli|kendra|kimberly|ivy|joanna|fiona|moira|tessa|alice|amelie|aria/i
+    const maleNames = /male|david|mark|alex|daniel|james|george|guy|ryan|brian|aaron|fred|tom|arthur|microsoft guy|google uk english male/i
+
+    return englishVoices.find((voice) => femaleNames.test(voice.name))
+      || englishVoices.find((voice) => !maleNames.test(voice.name))
+      || englishVoices[0]
+      || null
+  }
+
+  useEffect(() => {
+    const loadCoachVoice = () => {
+      coachVoiceRef.current = findFemaleVoice(window.speechSynthesis.getVoices())
+    }
+
+    loadCoachVoice()
+    window.speechSynthesis?.addEventListener('voiceschanged', loadCoachVoice)
+
+    return () => {
+      recognitionRef.current?.stop()
+      window.speechSynthesis?.removeEventListener('voiceschanged', loadCoachVoice)
+    }
+  }, [])
 
   const speak = (text, continueListening = true) => {
     if (!('speechSynthesis' in window)) return
@@ -33,12 +57,15 @@ function EnglishCoach() {
     setIsCoachSpeaking(true)
     coachVideoRef.current?.play().catch(() => {})
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'en-US'
+    utterance.lang = coachVoiceRef.current?.lang || 'en-US'
     utterance.rate = 0.92
-    const voices = window.speechSynthesis.getVoices()
-    const femaleVoice = voices.find((voice) => /en/i.test(voice.lang) && /female|samantha|zira|susan|karen|victoria|google us english/i.test(voice.name))
-      || voices.find((voice) => /^en(-|_)/i.test(voice.lang))
-    if (femaleVoice) utterance.voice = femaleVoice
+    utterance.pitch = 1.08
+    const femaleVoice = coachVoiceRef.current || findFemaleVoice(window.speechSynthesis.getVoices())
+    if (femaleVoice) {
+      coachVoiceRef.current = femaleVoice
+      utterance.voice = femaleVoice
+      utterance.lang = femaleVoice.lang
+    }
     utterance.onend = () => {
       setIsCoachSpeaking(false)
       coachVideoRef.current?.pause()
