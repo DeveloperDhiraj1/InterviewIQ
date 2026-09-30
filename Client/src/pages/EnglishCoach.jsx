@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowLeft, Brain, CheckCircle2, Lightbulb, Mic, MicOff, Send, Volume2 } from 'lucide-react'
+import { ArrowLeft, Brain, CheckCircle2, Lightbulb, Mic, MicOff, Play, Send, Volume2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import api from '../utils/api'
 import femaleInterviewerVideo from '../assets/female-ai.mp4'
@@ -91,6 +91,9 @@ function EnglishCoach() {
     }
   }
 
+  const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant')?.content || ''
+  const startConversation = () => speak(latestAssistantMessage)
+
   return (
     <main className='app-shell min-h-screen px-4 py-6 pb-24 text-emerald-50 sm:px-6'>
       <SEOHelmet pageName='english' />
@@ -133,14 +136,15 @@ function EnglishCoach() {
 
         <div className='mt-6 grid gap-6 lg:grid-cols-[1fr_320px]'>
           <section className='premium-card flex min-h-[520px] flex-col rounded-2xl p-4 sm:p-5'>
-            <div className='mb-4 grid gap-4 rounded-2xl border border-emerald-400/15 bg-gradient-to-br from-emerald-500/10 to-white/[0.03] p-3 sm:grid-cols-[190px_1fr] sm:p-4'>
-              <div className={`relative aspect-video overflow-hidden rounded-xl border bg-slate-950 ${isCoachSpeaking ? 'border-emerald-300 shadow-[0_0_26px_rgba(52,211,153,0.35)]' : 'border-white/10'}`}>
+            <div className={`relative mb-4 min-h-[390px] overflow-hidden rounded-2xl border bg-slate-950 ${isCoachSpeaking ? 'border-emerald-300 shadow-[0_0_32px_rgba(52,211,153,0.35)]' : 'border-emerald-400/15'}`}>
+              <div className='absolute inset-0'>
                 <video ref={coachVideoRef} src={femaleInterviewerVideo} autoPlay muted playsInline loop className='h-full w-full object-cover' />
-                <div className='absolute inset-x-2 bottom-2 rounded-lg bg-black/55 px-2 py-1.5 text-xs font-semibold text-white backdrop-blur'>
-                  {isCoachSpeaking ? 'Speaking...' : 'English Coach'}
+                <div className='absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-xl bg-black/60 px-3 py-2 backdrop-blur'>
+                  <span className='text-xs font-semibold text-white'>{isCoachSpeaking ? 'Speaking...' : 'English Coach'}</span>
+                  <button type='button' onClick={startConversation} disabled={isCoachSpeaking} className='inline-flex items-center gap-1.5 rounded-lg bg-emerald-400 px-2.5 py-1.5 text-xs font-bold text-slate-950 disabled:opacity-60'><Play size={13} /> Talk</button>
                 </div>
               </div>
-              <div className='flex flex-col justify-center'>
+              <div className='hidden'>
                 <p className='text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300'>Your virtual tutor</p>
                 <h2 className='mt-2 text-xl font-semibold text-white'>Let’s have a real conversation.</h2>
                 <p className='mt-2 text-sm leading-6 text-emerald-100/65'>Tap the microphone, speak naturally, and I’ll listen, reply, and gently correct your English.</p>
@@ -148,13 +152,13 @@ function EnglishCoach() {
             </div>
             <div className='flex items-center justify-between border-b border-white/10 pb-4'>
               <div>
-                <p className='text-sm font-semibold text-white'>Conversation practice</p>
-                <p className='mt-1 text-xs text-emerald-100/50'>Speak or type in English</p>
+                <p className='text-sm font-semibold text-white'>Speak to your tutor</p>
+                <p className='mt-1 text-xs text-emerald-100/50'>Use the microphone to start a live conversation</p>
               </div>
               <span className='flex items-center gap-2 text-xs text-emerald-300'><span className='h-2 w-2 rounded-full bg-emerald-400' /> Coach ready</span>
             </div>
 
-            <div className='flex-1 space-y-4 overflow-y-auto py-5'>
+            <div className='hidden'>
               {messages.map((message, index) => (
                 <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-emerald-500/20 text-emerald-50' : 'rounded-bl-md bg-white/5 text-emerald-100/80'}`}>
