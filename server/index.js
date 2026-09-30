@@ -12,6 +12,7 @@ import http from "http";
 import { Server } from "socket.io";
 import gdRoomRouter from "./routes/gdRoom.route.js";
 import gdAiRouter from "./routes/gdAi.route.js";
+import englishRouter from "./routes/english.route.js";
 import { initializeGdSockets } from "./sockets/gdSocketHandler.js";
 
 const app = express();
@@ -79,6 +80,7 @@ app.use("/api/payments", paymentRouter)
 app.use("/api/admin", adminRouter)
 app.use("/api/gd/rooms", gdRoomRouter)
 app.use("/api/gd/ai", gdAiRouter)
+app.use("/api/english", englishRouter)
 
 const PORT = process.env.PORT || 6000;
 

@@ -1,9 +1,10 @@
-import { BarChart3, Home, Mic, Users } from 'lucide-react'
+import { BarChart3, BookOpen, Home, Mic, Users } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const items = [
   { label: 'Home', to: '/', icon: Home },
   { label: 'Practice', to: '/interview', icon: Mic },
+  { label: 'English', to: '/english', icon: BookOpen },
   { label: 'Group', to: '/gd/lobby', icon: Users },
   { label: 'Reports', to: '/history', icon: BarChart3 },
 ]

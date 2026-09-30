@@ -876,3 +876,62 @@ ${interview.overallScore || 0}/10`,
     return { ...fallback, aiError: error.message }
   }
 }
+
+function localEnglishCoach(message = "") {
+  const text = message.trim()
+  const correctedSentence = text
+    .replace(/\bi am\b/gi, "I am")
+    .replace(/\bi have\b/gi, "I have")
+    .replace(/\bi want\b/gi, "I want")
+    .replace(/\s+/g, " ")
+    .replace(/^./, (character) => character.toUpperCase())
+
+  return {
+    reply: "That is a good start. Could you explain one example from your daily life or work?",
+    correctedSentence: correctedSentence || "Please say a complete sentence.",
+    explanation: correctedSentence !== text ? "I corrected capitalization and sentence spacing." : "Your sentence is understandable. Try adding one specific detail.",
+    betterPhrase: "In my experience, one example is...",
+    pronunciationTips: ["Speak slowly and finish each word.", "Pause briefly after each sentence."],
+    confidenceScore: text ? 6 : 2,
+    nextQuestion: "What is one thing you did today?",
+    provider: localProvider.provider,
+    model: localProvider.model,
+  }
+}
+
+export async function coachEnglishMessage({ message = "", history = [], level = "beginner", goal = "conversation", aiProvider }) {
+  const fallback = localEnglishCoach(message)
+
+  if (!message.trim() || normalizeProvider(aiProvider) === "fallback") return fallback
+
+  try {
+    const result = await callAiJson({
+      schemaName: "english_speaking_coach",
+      instructions: `You are a patient, warm English speaking coach. Talk like a real human conversation partner, not a textbook.
+The learner level is ${level}. Their goal is ${goal}.
+Reply naturally in simple English. Correct only the learner's most important mistakes so feedback does not feel overwhelming.
+Keep the reply conversational and ask one short follow-up question.
+Return only valid JSON.`,
+      input: `Recent conversation:\n${history.slice(-8).map((item) => `${item.role}: ${clampText(item.content, 800)}`).join("\n")}\n\nLearner's latest message:\n${clampText(message, 2500)}`,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["reply", "correctedSentence", "explanation", "betterPhrase", "pronunciationTips", "confidenceScore", "nextQuestion"],
+        properties: {
+          reply: { type: "string" },
+          correctedSentence: { type: "string" },
+          explanation: { type: "string" },
+          betterPhrase: { type: "string" },
+          pronunciationTips: { type: "array", items: { type: "string" }, maxItems: 3 },
+          confidenceScore: { type: "integer", minimum: 0, maximum: 10 },
+          nextQuestion: { type: "string" },
+        },
+      },
+    }, aiProvider)
+
+    if (!result) return fallback
+    return { ...fallback, ...result.json, provider: result.provider, model: result.model }
+  } catch (error) {
+    return { ...fallback, aiError: error.message }
+  }
+}

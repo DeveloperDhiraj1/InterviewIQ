@@ -16,12 +16,13 @@ import InstallPrompt from './components/InstallPrompt'
 import MobileBottomNav from './components/MobileBottomNav'
 import AppLaunchScreen from './components/AppLaunchScreen'
 import RequireAuth from './components/RequireAuth'
+import EnglishCoach from './pages/EnglishCoach'
 import { useLocation } from 'react-router-dom'
 
 function App() {
   const location = useLocation()
   const [pageKey, setPageKey] = useState(location.pathname)
-  const showMobileNav = ['/', '/home', '/interview', '/gd/lobby', '/history'].some((path) =>
+  const showMobileNav = ['/', '/home', '/interview', '/english', '/gd/lobby', '/history'].some((path) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
   )
 
@@ -37,6 +38,7 @@ function App() {
           <Route path='/home' element={<Home />} />
           <Route path='/auth' element={<Auth />} />
           <Route path='/interview' element={<Interview />} />
+          <Route path='/english' element={<RequireAuth><EnglishCoach /></RequireAuth>} />
           <Route path='/history' element={<History />} />
           <Route path='/pricing' element={<Pricing />} />
           <Route path='/about' element={<About />} />
