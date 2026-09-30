@@ -42,12 +42,28 @@ export const SEOHelmet = ({ pageName = 'home', customTitle = '', customDescripti
     updateMetaTag('og:type', seo.ogType, true)
     updateMetaTag('og:url', seo.canonical, true)
     updateMetaTag('og:image', seo.ogImage, true)
+    updateMetaTag('og:site_name', 'InterviewIQ AI', true)
+    updateMetaTag('og:locale', 'en_US', true)
     
     // Twitter Card tags
     updateMetaTag('twitter:title', title, true)
     updateMetaTag('twitter:description', customDescription || seo.description, true)
     updateMetaTag('twitter:card', seo.twitterCard, true)
     updateMetaTag('twitter:image', seo.ogImage, true)
+    updateMetaTag('twitter:url', seo.canonical, true)
+
+    let schemaScript = document.querySelector('#page-schema')
+    if (seo.schema) {
+      if (!schemaScript) {
+        schemaScript = document.createElement('script')
+        schemaScript.id = 'page-schema'
+        schemaScript.type = 'application/ld+json'
+        document.head.appendChild(schemaScript)
+      }
+      schemaScript.textContent = JSON.stringify(seo.schema)
+    } else if (schemaScript) {
+      schemaScript.remove()
+    }
     
     // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]')

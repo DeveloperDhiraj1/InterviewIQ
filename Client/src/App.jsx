@@ -38,7 +38,7 @@ function App() {
           <Route path='/home' element={<Home />} />
           <Route path='/auth' element={<Auth />} />
           <Route path='/interview' element={<Interview />} />
-          <Route path='/english' element={<RequireAuth><EnglishCoach /></RequireAuth>} />
+          <Route path='/english' element={<EnglishCoach />} />
           <Route path='/history' element={<History />} />
           <Route path='/pricing' element={<Pricing />} />
           <Route path='/about' element={<About />} />

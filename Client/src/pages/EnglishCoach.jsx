@@ -3,6 +3,7 @@ import { ArrowLeft, Brain, CheckCircle2, Lightbulb, Mic, MicOff, Send, Volume2 }
 import { Link } from 'react-router-dom'
 import api from '../utils/api'
 import femaleInterviewerVideo from '../assets/female-ai.mp4'
+import SEOHelmet from '../components/SEOHelmet'
 
 const SpeechRecognition = typeof window !== 'undefined'
   ? (window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -92,6 +93,7 @@ function EnglishCoach() {
 
   return (
     <main className='app-shell min-h-screen px-4 py-6 pb-24 text-emerald-50 sm:px-6'>
+      <SEOHelmet pageName='english' />
       <div className='mx-auto max-w-6xl'>
         <div className='flex items-center justify-between gap-3'>
           <Link to='/' className='btn-ghost inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold'>
@@ -196,6 +198,34 @@ function EnglishCoach() {
             </div>
           </aside>
         </div>
+
+        <section className='mt-10 grid gap-6 lg:grid-cols-2'>
+          <div className='premium-card rounded-2xl p-5 sm:p-6'>
+            <p className='eyebrow'>Learn by speaking</p>
+            <h2 className='mt-2 text-2xl font-semibold text-white'>A practical spoken English practice routine</h2>
+            <div className='mt-5 grid gap-3'>
+              {[
+                ['Speak naturally', 'Answer a question by voice or text without translating every word first.'],
+                ['See useful corrections', 'Understand the most important grammar and word-choice improvements.'],
+                ['Try a better phrase', 'Repeat natural expressions that you can use in real conversations and interviews.'],
+              ].map(([title, description], index) => (
+                <div key={title} className='flex gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3'>
+                  <span className='grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-sm font-bold text-emerald-300'>{index + 1}</span>
+                  <div><h3 className='text-sm font-semibold text-white'>{title}</h3><p className='mt-1 text-sm leading-5 text-emerald-100/60'>{description}</p></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className='premium-card rounded-2xl p-5 sm:p-6'>
+            <p className='eyebrow'>English speaking coach FAQ</p>
+            <h2 className='mt-2 text-2xl font-semibold text-white'>Practice English with helpful feedback</h2>
+            <div className='mt-5 space-y-4 text-sm'>
+              <div><h3 className='font-semibold text-white'>Can I practice English by speaking?</h3><p className='mt-1 leading-6 text-emerald-100/60'>Yes. Use the microphone to answer naturally, then review the corrected sentence and pronunciation tips.</p></div>
+              <div><h3 className='font-semibold text-white'>Can beginners use this English coach?</h3><p className='mt-1 leading-6 text-emerald-100/60'>Yes. Choose Beginner level and practice daily conversation with simple, supportive replies.</p></div>
+              <div><h3 className='font-semibold text-white'>Can I practice interview English?</h3><p className='mt-1 leading-6 text-emerald-100/60'>Choose Interview English to rehearse professional answers, confidence, and workplace vocabulary.</p></div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   )

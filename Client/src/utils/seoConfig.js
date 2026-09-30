@@ -50,6 +50,27 @@ export const seoConfig = {
     ogImage: `${DOMAIN}/img1.png`,
     twitterCard: 'summary',
   },
+  english: {
+    title: 'AI English Speaking Coach | Practice English Conversation Online',
+    description: 'Improve spoken English with an AI conversation coach. Practice speaking, get gentle grammar corrections, learn better phrases, and build confidence for daily conversations and interviews.',
+    keywords: 'AI English speaking coach, practice English conversation, spoken English practice, English grammar correction, English pronunciation practice, English interview practice',
+    canonical: `${DOMAIN}/english`,
+    ogType: 'website',
+    ogImage: `${DOMAIN}/img1.png`,
+    twitterCard: 'summary_large_image',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'InterviewIQ AI English Speaking Coach',
+      url: `${DOMAIN}/english`,
+      description: 'An AI English speaking coach for conversation practice, grammar feedback, pronunciation tips, and interview English.',
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web',
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      publisher: { '@type': 'Organization', name: BRAND, url: DOMAIN },
+    },
+  },
 }
 
 /**
