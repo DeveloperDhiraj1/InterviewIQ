@@ -15,6 +15,7 @@ function EnglishCoach() {
   const [input, setInput] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [autoListen, setAutoListen] = useState(true)
   const [error, setError] = useState('')
   const [messages, setMessages] = useState([
     { role: 'assistant', content: "Hi! I’m your English speaking coach. Tell me about your day in English, and I’ll help you improve naturally." },
@@ -26,7 +27,7 @@ function EnglishCoach() {
 
   useEffect(() => () => recognitionRef.current?.stop(), [])
 
-  const speak = (text) => {
+  const speak = (text, continueListening = true) => {
     if (!('speechSynthesis' in window)) return
     window.speechSynthesis.cancel()
     setIsCoachSpeaking(true)
@@ -34,9 +35,16 @@ function EnglishCoach() {
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'en-US'
     utterance.rate = 0.92
+    const voices = window.speechSynthesis.getVoices()
+    const femaleVoice = voices.find((voice) => /en/i.test(voice.lang) && /female|samantha|zira|susan|karen|victoria|google us english/i.test(voice.name))
+      || voices.find((voice) => /^en(-|_)/i.test(voice.lang))
+    if (femaleVoice) utterance.voice = femaleVoice
     utterance.onend = () => {
       setIsCoachSpeaking(false)
       coachVideoRef.current?.pause()
+      if (continueListening && autoListen) {
+        window.setTimeout(() => startListening(), 350)
+      }
     }
     window.speechSynthesis.speak(utterance)
   }
@@ -164,7 +172,7 @@ function EnglishCoach() {
                   <div className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-emerald-500/20 text-emerald-50' : 'rounded-bl-md bg-white/5 text-emerald-100/80'}`}>
                     <p>{message.content}</p>
                     {message.role === 'assistant' && (
-                      <button onClick={() => speak(message.content)} className='mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300 hover:text-emerald-200'>
+                      <button onClick={() => speak(message.content, false)} className='mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300 hover:text-emerald-200'>
                         <Volume2 size={13} /> Listen
                       </button>
                     )}
@@ -185,6 +193,10 @@ function EnglishCoach() {
                 </button>
               </div>
             </form>
+            <label className='mt-3 inline-flex cursor-pointer items-center gap-2 text-xs text-emerald-100/60'>
+              <input type='checkbox' checked={autoListen} onChange={(event) => setAutoListen(event.target.checked)} className='h-4 w-4 accent-emerald-400' />
+              Automatically open microphone after the coach speaks
+            </label>
             {error && <p className='mt-3 rounded-xl border border-red-400/20 bg-red-500/10 p-3 text-xs text-red-200'>{error}</p>}
           </section>
 
