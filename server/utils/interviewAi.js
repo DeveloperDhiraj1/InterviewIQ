@@ -91,6 +91,8 @@ const callOpenAiJson = async ({ instructions, input, schemaName, schema }) => {
       model: DEFAULT_MODEL,
       instructions,
       input,
+      temperature: 0.7,
+      max_output_tokens: 700,
       text: {
         format: {
           type: "json_schema",
@@ -108,8 +110,6 @@ const callOpenAiJson = async ({ instructions, input, schemaName, schema }) => {
   }
 
   const payload = await response.json()
-  console.log("OPENAI RESPONSE")
-  console.log(payload)
   const jsonText = getJsonOutput(payload)
   if (!jsonText) {
     throw new Error("OpenAI response did not include JSON text")
@@ -132,8 +132,9 @@ const callGeminiJson = async ({ instructions, input, schemaName, schema }) => {
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 6000,
+        temperature: 0.7,
+        topP: 0.9,
+        maxOutputTokens: 900,
         responseMimeType: "application/json",
       },
     }),
@@ -145,8 +146,6 @@ const callGeminiJson = async ({ instructions, input, schemaName, schema }) => {
   }
 
   const payload = await response.json()
-  console.log("GEMINI RESPONSE")
-  console.log(payload)
   const jsonText = getJsonOutput(payload)
   if (!jsonText) {
     throw new Error("Gemini response did not include JSON text")
@@ -886,8 +885,19 @@ function localEnglishCoach(message = "") {
     .replace(/\s+/g, " ")
     .replace(/^./, (character) => character.toUpperCase())
 
+  const followUps = [
+    "What was the most interesting part of that for you?",
+    "How did that make you feel?",
+    "What happened next?",
+    "Would you do anything differently next time?",
+    "Can you tell me a little more about that?",
+  ]
+  const followUp = followUps[text.length % followUps.length]
+
   return {
-    reply: "That is a good start. Could you explain one example from your daily life or work?",
+    reply: text
+      ? `I understand. You mentioned “${text.slice(0, 90)}${text.length > 90 ? "..." : ""}.” ${followUp}`
+      : `I’m ready to chat. ${followUp}`,
     correctedSentence: correctedSentence || "Please say a complete sentence.",
     explanation: correctedSentence !== text ? "I corrected capitalization and sentence spacing." : "Your sentence is understandable. Try adding one specific detail.",
     betterPhrase: "In my experience, one example is...",
@@ -907,12 +917,13 @@ export async function coachEnglishMessage({ message = "", history = [], level = 
   try {
     const result = await callAiJson({
       schemaName: "english_speaking_coach",
-      instructions: `You are a patient, warm English speaking coach. Talk like a real human conversation partner, not a textbook.
+      instructions: `You are a warm, attentive English conversation partner and speaking coach. Behave like a real human, not a lesson generator.
 The learner level is ${level}. Their goal is ${goal}.
-Reply naturally in simple English. Correct only the learner's most important mistakes so feedback does not feel overwhelming.
-Keep the reply conversational and ask one short follow-up question.
+First respond to the meaning of the learner's latest message. Show that you understood one specific detail, add a natural reaction or a brief personal-style conversational response, then ask exactly one relevant follow-up question.
+Do not use canned openings such as “That is a good start”, “Great job”, or “Could you explain one example” repeatedly. Do not repeat a question, correction, or phrase already used in the recent conversation. Vary your wording and follow-up question every turn.
+Correct only the one or two most important English mistakes. If the sentence is already natural, say so briefly and focus on continuing the conversation. Keep reply under 55 words and keep all feedback fields concise.
 Return only valid JSON.`,
-      input: `Recent conversation:\n${history.slice(-8).map((item) => `${item.role}: ${clampText(item.content, 800)}`).join("\n")}\n\nLearner's latest message:\n${clampText(message, 2500)}`,
+      input: `Recent conversation (use it to avoid repetition):\n${history.slice(-6).map((item) => `${item.role}: ${clampText(item.content, 500)}`).join("\n")}\n\nLearner's latest message:\n${clampText(message, 1200)}`,
       schema: {
         type: "object",
         additionalProperties: false,
