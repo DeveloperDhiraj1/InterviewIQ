@@ -86,13 +86,35 @@ function EnglishCoach() {
     recognition.lang = 'en-US'
     recognition.interimResults = false
     recognition.continuous = false
+    recognition.maxAlternatives = 3
     recognition.onstart = () => { setIsListening(true); setError('') }
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript
+      const alternatives = Array.from(event.results[0] || [])
+      const bestResult = alternatives.sort((first, second) => (second.confidence || 0) - (first.confidence || 0))[0]
+      const transcript = bestResult?.transcript?.trim() || ''
+      const confidence = bestResult?.confidence || 0
+      const words = transcript.split(/\s+/).filter(Boolean)
+      const looksLikeNoise = !transcript
+        || !/[a-z]/i.test(transcript)
+        || (confidence > 0 && confidence < 0.45 && words.length <= 5)
+        || /^(um+|uh+|hmm+|ah+|mm+|noise|music|background noise)$/i.test(transcript)
+        || (words.length > 1 && new Set(words.map((word) => word.toLowerCase())).size === 1)
+
+      if (looksLikeNoise) {
+        setError('I heard some background noise. Please speak clearly after the microphone opens.')
+        return
+      }
+
       setInput(transcript)
       window.setTimeout(() => sendMessage(null, transcript), 0)
     }
-    recognition.onerror = () => setError('I could not hear that clearly. Please try again.')
+    recognition.onerror = (event) => {
+      if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        setError('I could not hear clear speech. Please move closer to the microphone and try again.')
+        return
+      }
+      setError('I could not hear that clearly. Please try again.')
+    }
     recognition.onend = () => setIsListening(false)
     recognitionRef.current = recognition
     recognition.start()
